@@ -1,54 +1,27 @@
 import { Box, Image, Text, Button } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
 
-import {
-  likePost,
-  unlikePost,
-  getLikesCount,
-  isPostLiked,
-} from "../features/likes/likeAPI";
+import { useDispatch } from "react-redux";
+
+import { likePost, unlikePost } from "../features/likes/likeAPI";
+
+import { toggleLike } from "../features/posts/postSlice";
 
 interface Props {
   post: any;
 }
 
 const PostCard = ({ post }: Props) => {
-  const [likes, setLikes] = useState(post.likes_count || 0);
-
-  const [liked, setLiked] = useState(false);
-
-  useEffect(() => {
-    fetchLikes();
-  }, []);
-
-  const fetchLikes = async () => {
-    try {
-      const data = await getLikesCount(post.id);
-
-      setLikes(data.likes);
-      const likedData = await isPostLiked(post.id);
-      setLiked(likedData.liked);
-
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const dispatch = useDispatch();
 
   const handleLike = async () => {
     try {
-      if (liked) {
+      if (post.liked_by_user) {
         await unlikePost(post.id);
-
-        setLikes((prev) => prev - 1);
-
-        setLiked(false);
       } else {
         await likePost(post.id);
-
-        setLikes((prev) => prev + 1);
-
-        setLiked(true);
       }
+
+      dispatch(toggleLike(post.id));
     } catch (error) {
       console.log(error);
     }
@@ -72,19 +45,14 @@ const PostCard = ({ post }: Props) => {
         />
       )}
 
-      {!post.image_url && (
-        <Box h="200px" bg="gray.100" borderRadius="md" mb={3} />
-      )}
-
-      <Text>{post.content}</Text>
+      <Text mb={3}>{post.content}</Text>
 
       <Button
-        mt={3}
         size="sm"
-        colorScheme={liked ? "red" : "gray"}
+        colorScheme={post.liked_by_user ? "red" : "gray"}
         onClick={handleLike}
       >
-        {liked ? "❤️" : "🤍"} {likes}
+        {post.liked_by_user ? "❤️" : "🤍"} {post.likes_count}
       </Button>
     </Box>
   );

@@ -54,14 +54,28 @@ def create_post(
     response_model=list[PostResponse]
 )
 def get_posts(
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
 
     posts = db.query(Post).order_by(
         Post.createdAt.desc()
     ).all()
 
-    return posts
+    result = []
+
+    for post in posts:
+
+        post.likes_count = len(post.likes)
+
+        post.liked_by_user = any(
+            like.user_id == current_user.id
+            for like in post.likes
+        )
+
+        result.append(post)
+
+    return result
 
 
 # Get Single Post
@@ -85,13 +99,9 @@ def get_post(
             detail="Post not found"
         )
 
-    result = []
+    post.likes_count = len(post.likes)
 
-    for post in posts:
-        post.likes_count = len(post.likes)
-        result.append(post)
-
-    return result
+    return post
 
 
 # Delete Post
