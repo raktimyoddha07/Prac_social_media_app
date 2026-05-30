@@ -17,3 +17,9 @@ export const getLikesCount = async (postId: string) => {
 
   return response.data;
 };
+
+export const isPostLiked = async (postId: string) => {
+  const response = await API.get(`/posts/${postId}/liked`);
+
+  return response.data;
+};

@@ -4,6 +4,7 @@ from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 import uuid
 from core.database import Base
+from models.like import Like
 
 class Post(Base):
     __tablename__ = "posts"
@@ -41,3 +42,8 @@ class Post(Base):
         onupdate=func.now()
     )
     user = relationship("User", back_populates="posts")
+    likes = relationship(
+    "Like",
+    backref="post",
+    cascade="all, delete"
+)

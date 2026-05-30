@@ -85,7 +85,13 @@ def get_post(
             detail="Post not found"
         )
 
-    return post
+    result = []
+
+    for post in posts:
+        post.likes_count = len(post.likes)
+        result.append(post)
+
+    return result
 
 
 # Delete Post

@@ -18,6 +18,7 @@ class PostResponse(BaseModel):
     content: str
     image_url: str | None = None
     user: UserResponse
+    likes_count: int = 0
     createdAt: datetime
     updatedAt: datetime
     class Config:

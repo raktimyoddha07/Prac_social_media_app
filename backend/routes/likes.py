@@ -109,3 +109,19 @@ def get_likes_count(
     return {
         "likes": likes_count
     }
+
+@router.get("/posts/{post_id}/liked")
+def is_post_liked(
+    post_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+
+    like = db.query(Like).filter(
+        Like.post_id == post_id,
+        Like.user_id == current_user.id
+    ).first()
+
+    return {
+        "liked": like is not None
+    }
