@@ -1,10 +1,12 @@
 import { Box, Image, Text, Button } from "@chakra-ui/react";
-
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-
 import { likePost, unlikePost } from "../features/likes/likeAPI";
-
 import { toggleLike } from "../features/posts/postSlice";
+import { createComment, getComments } from "../features/comments/commentAPI";
+import CommentForm from "./CommentForm";
+
+import CommentList from "./CommentList";
 
 interface Props {
   post: any;
@@ -12,6 +14,22 @@ interface Props {
 
 const PostCard = ({ post }: Props) => {
   const dispatch = useDispatch();
+
+  const [comments, setComments] = useState<any[]>([]);
+
+  const fetchComments = async () => {
+    try {
+      const data = await getComments(post.id);
+
+      setComments(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchComments();
+  }, []);
 
   const handleLike = async () => {
     try {
@@ -22,6 +40,16 @@ const PostCard = ({ post }: Props) => {
       }
 
       dispatch(toggleLike(post.id));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleComment = async (commentText: string) => {
+    try {
+      await createComment(post.id, commentText);
+
+      fetchComments();
     } catch (error) {
       console.log(error);
     }
@@ -54,6 +82,10 @@ const PostCard = ({ post }: Props) => {
       >
         {post.liked_by_user ? "❤️" : "🤍"} {post.likes_count}
       </Button>
+
+      <CommentForm onSubmit={handleComment} />
+
+      <CommentList comments={comments} />
     </Box>
   );
 };

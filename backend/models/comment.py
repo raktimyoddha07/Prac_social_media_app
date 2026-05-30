@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Text, DateTime, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql import func
+from sqlalchemy.orm import relationship
 import uuid
 
 from core.database import Base
@@ -40,4 +41,8 @@ class Comment(Base):
         DateTime(timezone=True),
         server_default=func.now(),
         onupdate=func.now()
+    )
+    user = relationship(
+        "User",
+        backref="comments"
     )
