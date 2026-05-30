@@ -1,9 +1,15 @@
 import { Box, Image, Text, Button } from "@chakra-ui/react";
+
 import { useEffect, useState } from "react";
+
 import { useDispatch } from "react-redux";
+
 import { likePost, unlikePost } from "../features/likes/likeAPI";
+
 import { toggleLike } from "../features/posts/postSlice";
+
 import { createComment, getComments } from "../features/comments/commentAPI";
+
 import CommentForm from "./CommentForm";
 
 import CommentList from "./CommentList";
@@ -16,6 +22,8 @@ const PostCard = ({ post }: Props) => {
   const dispatch = useDispatch();
 
   const [comments, setComments] = useState<any[]>([]);
+
+  const [showComments, setShowComments] = useState(false);
 
   const fetchComments = async () => {
     try {
@@ -58,7 +66,7 @@ const PostCard = ({ post }: Props) => {
   return (
     <Box borderWidth="1px" p={4} borderRadius="lg" mb={4}>
       <Text fontWeight="bold" mb={2}>
-        {post.user?.username || "User"}
+        {post.user?.username}
       </Text>
 
       {post.image_url && (
@@ -75,17 +83,32 @@ const PostCard = ({ post }: Props) => {
 
       <Text mb={3}>{post.content}</Text>
 
-      <Button
-        size="sm"
-        colorScheme={post.liked_by_user ? "red" : "gray"}
-        onClick={handleLike}
-      >
-        {post.liked_by_user ? "❤️" : "🤍"} {post.likes_count}
-      </Button>
+      <Box mt={3}>
+        <Button
+          size="sm"
+          mr={2}
+          colorScheme={post.liked_by_user ? "red" : "gray"}
+          onClick={handleLike}
+        >
+          {post.liked_by_user ? "❤️" : "🤍"} {post.likes_count}
+        </Button>
 
-      <CommentForm onSubmit={handleComment} />
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={() => setShowComments(!showComments)}
+        >
+          💬 {comments.length}
+        </Button>
+      </Box>
 
-      <CommentList comments={comments} />
+      {showComments && (
+        <Box mt={4}>
+          <CommentForm onSubmit={handleComment} />
+
+          <CommentList comments={comments} />
+        </Box>
+      )}
     </Box>
   );
 };
