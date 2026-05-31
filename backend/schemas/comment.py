@@ -24,3 +24,6 @@ class CommentResponse(BaseModel):
     createdAt: datetime
     class Config:
         from_attributes = True
+
+class CommentUpdate(BaseModel):
+    comment_text: str

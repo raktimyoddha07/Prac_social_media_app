@@ -122,7 +122,6 @@ const PostCard = ({ post }: Props) => {
           )}
         </Box>
       </Text>
-      
 
       {post.image_url && (
         <Image
@@ -178,7 +177,7 @@ const PostCard = ({ post }: Props) => {
         <Box mt={4}>
           <CommentForm onSubmit={handleComment} />
 
-          <CommentList comments={comments} />
+          <CommentList comments={comments} refreshComments={fetchComments} />
         </Box>
       )}
     </Box>

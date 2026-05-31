@@ -14,6 +14,14 @@ export const getComments = async (postId: string) => {
   return response.data;
 };
 
+export const updateComment = async (commentId: string, commentText: string) => {
+  const response = await API.put(`/comments/${commentId}`, {
+    comment_text: commentText,
+  });
+
+  return response.data;
+};
+
 export const deleteComment = async (commentId: string) => {
   const response = await API.delete(`/comments/${commentId}`);
 
