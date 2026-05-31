@@ -180,4 +180,11 @@ def update_post(
 
     db.refresh(post)
 
+    post.likes_count = len(post.likes)
+
+    post.liked_by_user = any(
+        like.user_id == current_user.id
+        for like in post.likes
+    )
+
     return post

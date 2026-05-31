@@ -76,7 +76,7 @@ const CommentList = ({ comments, refreshComments }: Props) => {
                   setEditedText(comment.comment_text);
                 }}
               >
-                ✏️ Edit
+                ✏️
               </Button>
 
               <Button
@@ -84,7 +84,7 @@ const CommentList = ({ comments, refreshComments }: Props) => {
                 colorScheme="red"
                 onClick={() => handleDelete(comment.id)}
               >
-                🗑️ Delete
+                🗑️
               </Button>
             </>
           )}

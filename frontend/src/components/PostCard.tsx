@@ -85,6 +85,12 @@ const PostCard = ({ post }: Props) => {
     } catch (error) {
       console.log(error);
     }
+    const updatedPost = await updatePost(post.id, {
+      content: editedContent,
+      image_url: editedImageUrl,
+    });
+
+    dispatch(updatePostRedux(updatedPost));
   };
 
   const handleDelete = async () => {
@@ -96,6 +102,7 @@ const PostCard = ({ post }: Props) => {
       console.log(error);
     }
   };
+  
 
   return (
     <Box borderWidth="1px" p={4} borderRadius="lg" mb={4}>
@@ -117,11 +124,11 @@ const PostCard = ({ post }: Props) => {
         ) : (
           <>
             <Button size="sm" mr={2} onClick={() => setIsEditing(true)}>
-              ✏️ Edit
+              ✏️
             </Button>
 
             <Button size="sm" colorScheme="red" onClick={handleDelete}>
-              🗑️ Delete
+              🗑️
             </Button>
           </>
         )}
