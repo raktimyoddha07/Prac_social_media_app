@@ -1,11 +1,12 @@
 import API from "../../api/axios";
 
+// Get Posts
 export const getPosts = async () => {
   const response = await API.get("/posts");
-
   return response.data;
 };
 
+//Create Posts
 export const createPost = async (content: string, image_url: string) => {
   const response = await API.post("/posts", {
     content,
@@ -15,16 +16,24 @@ export const createPost = async (content: string, image_url: string) => {
   return response.data;
 };
 
+
+//Delete Posts
 export const deletePost = async (postId: string) => {
   const response = await API.delete(`/posts/${postId}`);
 
   return response.data;
 };
 
-export const updatePost = async (postId: string, content: string) => {
-  const response = await API.put(`/posts/${postId}`, {
-    content,
-  });
+
+//Update Posts
+export const updatePost = async (
+  postId: string,
+  data: {
+    content?: string;
+    image_url?: string;
+  },
+) => {
+  const response = await API.put(`/posts/${postId}`, data);
 
   return response.data;
 };

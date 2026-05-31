@@ -170,8 +170,11 @@ def update_post(
             detail="Not allowed"
         )
 
-    post.content = updated_post.content
-    post.image_url = updated_post.image_url
+    if updated_post.content is not None:
+        post.content = updated_post.content
+
+    if updated_post.image_url is not None:
+        post.image_url = updated_post.image_url
 
     db.commit()
 

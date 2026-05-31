@@ -9,13 +9,13 @@ class PostCreate(BaseModel):
     image_url: str | None = None
 
 class PostUpdate(BaseModel):
-    content: str
+    content: str | None = None
     image_url: str | None = None
 
 class PostResponse(BaseModel):
     id: UUID
     user_id: UUID
-    content: str
+    content: str | None = None
     image_url: str | None = None
     user: UserResponse
     likes_count: int=0
@@ -24,6 +24,5 @@ class PostResponse(BaseModel):
     updatedAt: datetime
     class Config:
         from_attributes = True
-
 
 PostResponse.model_rebuild()
