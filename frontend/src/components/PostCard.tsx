@@ -1,17 +1,22 @@
-import { Box, Image, Text, Button, Textarea, } from "@chakra-ui/react";
+import { Box, Image, Text, Button, Textarea } from "@chakra-ui/react";
 
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
+
 import { likePost, unlikePost } from "../features/likes/likeAPI";
+
 import {
   toggleLike,
   updatePost as updatePostRedux,
   deletePost as deletePostRedux,
 } from "../features/posts/postSlice";
+
 import { createComment, getComments } from "../features/comments/commentAPI";
+
+import { updatePost, deletePost } from "../features/posts/postAPI";
+
 import CommentForm from "./CommentForm";
 import CommentList from "./CommentList";
-import { updatePost, deletePost } from "../features/posts/postAPI";
 
 interface Props {
   post: any;
@@ -19,10 +24,14 @@ interface Props {
 
 const PostCard = ({ post }: Props) => {
   const dispatch = useDispatch();
+
   const [comments, setComments] = useState<any[]>([]);
   const [showComments, setShowComments] = useState(false);
+
   const [isEditing, setIsEditing] = useState(false);
+
   const [editedContent, setEditedContent] = useState(post.content);
+
   const [editedImageUrl, setEditedImageUrl] = useState(post.image_url || "");
 
   const fetchComments = async () => {
@@ -39,8 +48,6 @@ const PostCard = ({ post }: Props) => {
     fetchComments();
   }, []);
 
-
-//Handle likePost and unlikePost
   const handleLike = async () => {
     try {
       if (post.liked_by_user) {
@@ -65,20 +72,20 @@ const PostCard = ({ post }: Props) => {
     }
   };
 
- const handleUpdate = async () => {
-   try {
-     const updatedPost = await updatePost(post.id, {
-       content: editedContent,
-       image_url: editedImageUrl,
-     });
+  const handleUpdate = async () => {
+    try {
+      const updatedPost = await updatePost(post.id, {
+        content: editedContent,
+        image_url: editedImageUrl,
+      });
 
-     dispatch(updatePostRedux(updatedPost));
+      dispatch(updatePostRedux(updatedPost));
 
-     setIsEditing(false);
-   } catch (error) {
-     console.log(error);
-   }
- };
+      setIsEditing(false);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleDelete = async () => {
     try {
@@ -94,34 +101,31 @@ const PostCard = ({ post }: Props) => {
     <Box borderWidth="1px" p={4} borderRadius="lg" mb={4}>
       <Text fontWeight="bold" mb={2}>
         {post.user?.username}
-        <Box mb={3}>
-          {isEditing ? (
-            <>
-              <Button
-                size="sm"
-                colorScheme="green"
-                mr={2}
-                onClick={handleUpdate}
-              >
-                Save
-              </Button>
-
-              <Button size="sm" onClick={() => setIsEditing(false)}>
-                Cancel
-              </Button>
-            </>
-          ) : (
-            <>
-              <Button size="sm" mr={2} onClick={() => setIsEditing(true)}>
-                ✏️ Edit
-              </Button>
-              <Button size="sm" colorScheme="red" onClick={handleDelete}>
-                🗑️ Delete
-              </Button>
-            </>
-          )}
-        </Box>
       </Text>
+
+      <Box mb={3}>
+        {isEditing ? (
+          <>
+            <Button size="sm" colorScheme="green" mr={2} onClick={handleUpdate}>
+              Save
+            </Button>
+
+            <Button size="sm" onClick={() => setIsEditing(false)}>
+              Cancel
+            </Button>
+          </>
+        ) : (
+          <>
+            <Button size="sm" mr={2} onClick={() => setIsEditing(true)}>
+              ✏️ Edit
+            </Button>
+
+            <Button size="sm" colorScheme="red" onClick={handleDelete}>
+              🗑️ Delete
+            </Button>
+          </>
+        )}
+      </Box>
 
       {post.image_url && (
         <Image
