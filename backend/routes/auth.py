@@ -14,13 +14,13 @@ from core.security import (
     create_access_token,
     get_current_user
 )
-
 from models.user import User
 from fastapi.security import OAuth2PasswordRequestForm
 from schemas.user import (
     UserRegister,
     UserLogin,
-    UserResponse
+    UserResponse,
+    TokenResponse
 )
 
 router = APIRouter(
@@ -28,11 +28,10 @@ router = APIRouter(
     tags=["Auth"]
 )
 
-
 # Register
 @router.post(
     "/register",
-    response_model=UserResponse
+    response_model=TokenResponse
 )
 def register_user(
     user: UserRegister,
@@ -44,7 +43,6 @@ def register_user(
     ).first()
 
     if existing_email:
-
         raise HTTPException(
             status_code=400,
             detail="Email already exists"
@@ -70,12 +68,18 @@ def register_user(
         email=user.email,
         password=hashed_password
     )
-
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
-    return new_user
-
+    access_token = create_access_token(
+    data={
+        "user_id": str(new_user.id)
+        }
+    )
+    return {
+        "access_token": access_token,
+        "token_type": "bearer"
+    }
 
 # Login
 @router.post("/login")
@@ -111,7 +115,6 @@ def login_user(
         "token_type": "bearer"
     }
 
-
 # Current Logged In User
 @router.get(
     "/me",
@@ -120,5 +123,4 @@ def login_user(
 def get_me(
     current_user: User = Depends(get_current_user)
 ):
-
     return current_user

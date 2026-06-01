@@ -1,12 +1,17 @@
-import { Box, Button, Heading, Input, VStack } from "@chakra-ui/react";
+import { Box, Button, Heading, Input, VStack, Text } from "@chakra-ui/react";
 
 import { useState } from "react";
 
 import { registerUser } from "../features/auth/authAPI";
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { setToken } from "../features/auth/authSlice";
+
+
 
 const Register = () => {
+  const dispatch = useDispatch();
   const [username, setUsername] = useState("");
 
   const [email, setEmail] = useState("");
@@ -17,13 +22,15 @@ const Register = () => {
 
   const handleRegister = async () => {
     try {
-      await registerUser({
+      const data = await registerUser({
         username,
         email,
         password,
       });
 
-      navigate("/login");
+      localStorage.setItem("token", data.access_token);
+      dispatch(setToken(data.access_token));
+      navigate("/");
     } catch (error) {
       console.log(error);
     }
@@ -56,6 +63,12 @@ const Register = () => {
         <Button colorScheme="green" width="100%" onClick={handleRegister}>
           Register
         </Button>
+        <Text>
+          Already have an account?{" "}
+          <Link to="/login" style={{ color: "blue" }}>
+            Login
+          </Link>
+        </Text>
       </VStack>
     </Box>
   );

@@ -46,7 +46,6 @@ const PostCard = ({ post }: Props) => {
     }
   };
   const currentUser = useSelector((state: any) => state.auth.user);
-  console.log("AUTH STATE", currentUser);
   useEffect(() => {
     fetchComments();
   }, []);
@@ -99,10 +98,10 @@ const PostCard = ({ post }: Props) => {
       console.log(error);
     }
   };
-  console.log("CURRENT USER", currentUser);
-  console.log("CURRENT USER ID", currentUser?.id);
-  console.log("POST USER ID", post.user_id);
-  console.log("MATCH?", post.user_id === currentUser?.id);
+  // console.log("CURRENT USER", currentUser);
+  // console.log("CURRENT USER ID", currentUser?.id);
+  // console.log("POST USER ID", post.user_id);
+  // console.log("MATCH?", post.user_id === currentUser?.id);
 
   return (
     <Box borderWidth="1px" p={4} borderRadius="lg" mb={4}>

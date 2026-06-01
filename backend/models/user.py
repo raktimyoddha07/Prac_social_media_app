@@ -32,7 +32,7 @@ class User(Base):
         String,
         nullable=False
     )
-
+    
     createdAt = Column(
         DateTime(timezone=True),
         server_default=func.now()

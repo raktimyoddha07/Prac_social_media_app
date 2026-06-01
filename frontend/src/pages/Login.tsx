@@ -1,14 +1,15 @@
-import { Box, Button, Heading, Input, VStack } from "@chakra-ui/react";
+import { Box, Button, Heading, Input, VStack, Text } from "@chakra-ui/react";
 
 import { useState } from "react";
 
 import { useDispatch } from "react-redux";
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 import { loginUser } from "../features/auth/authAPI";
 
 import { setToken } from "../features/auth/authSlice";
+
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -57,6 +58,12 @@ const Login = () => {
         <Button colorScheme="blue" width="100%" onClick={handleLogin}>
           Login
         </Button>
+        <Text>
+          Don't have an account?{" "}
+          <Link to="/register" style={{ color: "blue" }}>
+            Register
+          </Link>
+        </Text>
       </VStack>
     </Box>
   );

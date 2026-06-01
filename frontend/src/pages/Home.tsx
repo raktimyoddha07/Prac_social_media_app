@@ -28,7 +28,7 @@ const Home = () => {
     try {
       const user = await getCurrentUser();
 
-      console.log("USER FROM API", user);
+      // console.log("USER FROM API", user);
 
       dispatch(setUser(user));
     } catch (error) {

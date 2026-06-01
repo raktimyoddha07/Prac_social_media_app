@@ -21,5 +21,7 @@ class UserResponse(BaseModel):
     email: EmailStr
     createdAt: datetime
     updatedAt: datetime
-    class Config:
-        from_attributes = True
+
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str

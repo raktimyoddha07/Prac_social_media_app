@@ -12,7 +12,6 @@ export const loginUser = async (data: LoginData) => {
   const formData = new URLSearchParams();
 
   formData.append("username", data.email);
-
   formData.append("password", data.password);
 
   const response = await API.post("/auth/login", formData, {
@@ -20,6 +19,5 @@ export const loginUser = async (data: LoginData) => {
       "Content-Type": "application/x-www-form-urlencoded",
     },
   });
-
   return response.data;
 };
