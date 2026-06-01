@@ -17,6 +17,7 @@ import { updatePost, deletePost } from "../features/posts/postAPI";
 
 import CommentForm from "./CommentForm";
 import CommentList from "./CommentList";
+import { useSelector } from "react-redux";
 
 interface Props {
   post: any;
@@ -33,6 +34,7 @@ const PostCard = ({ post }: Props) => {
   const [editedContent, setEditedContent] = useState(post.content);
 
   const [editedImageUrl, setEditedImageUrl] = useState(post.image_url || "");
+  
 
   const fetchComments = async () => {
     try {
@@ -43,7 +45,8 @@ const PostCard = ({ post }: Props) => {
       console.log(error);
     }
   };
-
+  const currentUser = useSelector((state: any) => state.auth.user);
+  console.log("AUTH STATE", currentUser);
   useEffect(() => {
     fetchComments();
   }, []);
@@ -85,12 +88,6 @@ const PostCard = ({ post }: Props) => {
     } catch (error) {
       console.log(error);
     }
-    const updatedPost = await updatePost(post.id, {
-      content: editedContent,
-      image_url: editedImageUrl,
-    });
-
-    dispatch(updatePostRedux(updatedPost));
   };
 
   const handleDelete = async () => {
@@ -102,7 +99,10 @@ const PostCard = ({ post }: Props) => {
       console.log(error);
     }
   };
-  
+  console.log("CURRENT USER", currentUser);
+  console.log("CURRENT USER ID", currentUser?.id);
+  console.log("POST USER ID", post.user_id);
+  console.log("MATCH?", post.user_id === currentUser?.id);
 
   return (
     <Box borderWidth="1px" p={4} borderRadius="lg" mb={4}>
@@ -110,29 +110,36 @@ const PostCard = ({ post }: Props) => {
         {post.user?.username}
       </Text>
 
-      <Box mb={3}>
-        {isEditing ? (
-          <>
-            <Button size="sm" colorScheme="green" mr={2} onClick={handleUpdate}>
-              Save
-            </Button>
+      {post.user_id === currentUser?.id && (
+        <Box mb={3}>
+          {isEditing ? (
+            <>
+              <Button
+                size="sm"
+                colorScheme="green"
+                mr={2}
+                onClick={handleUpdate}
+              >
+                Save
+              </Button>
 
-            <Button size="sm" onClick={() => setIsEditing(false)}>
-              Cancel
-            </Button>
-          </>
-        ) : (
-          <>
-            <Button size="sm" mr={2} onClick={() => setIsEditing(true)}>
-              ✏️
-            </Button>
+              <Button size="sm" onClick={() => setIsEditing(false)}>
+                Cancel
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button size="sm" mr={2} onClick={() => setIsEditing(true)}>
+                ✏️
+              </Button>
 
-            <Button size="sm" colorScheme="red" onClick={handleDelete}>
-              🗑️
-            </Button>
-          </>
-        )}
-      </Box>
+              <Button size="sm" colorScheme="red" onClick={handleDelete}>
+                🗑️
+              </Button>
+            </>
+          )}
+        </Box>
+      )}
 
       {post.image_url && (
         <Image

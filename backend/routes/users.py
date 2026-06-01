@@ -9,11 +9,20 @@ from models.user import User
 from models.post import Post
 from schemas.user import UserResponse
 from schemas.post import PostResponse
+from core.security import get_current_user
 
 router = APIRouter(
     prefix="/users",
     tags=["Users"]
 )
+
+#get current user
+@router.get("/me")
+def get_me(
+    current_user: User = Depends(get_current_user)
+):
+    print("CURRENT USER =", current_user)
+    return current_user
 
 
 # Get All Users
@@ -69,3 +78,11 @@ def get_user_posts(
     ).all()
 
     return posts
+
+
+@router.get("/me")
+def get_me(
+    current_user: User = Depends(get_current_user)
+):
+    print("CURRENT USER =", current_user)
+    return current_user

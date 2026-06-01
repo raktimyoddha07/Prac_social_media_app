@@ -26,6 +26,8 @@ const Login = () => {
         password,
       });
 
+      localStorage.setItem("token", data.access_token);
+
       dispatch(setToken(data.access_token));
 
       navigate("/");

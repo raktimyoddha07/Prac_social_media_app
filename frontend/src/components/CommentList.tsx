@@ -3,6 +3,7 @@ import { Box, Text, Button, Textarea } from "@chakra-ui/react";
 import { useState } from "react";
 
 import { updateComment, deleteComment } from "../features/comments/commentAPI";
+import { useSelector } from "react-redux";
 
 interface Props {
   comments: any[];
@@ -35,6 +36,7 @@ const CommentList = ({ comments, refreshComments }: Props) => {
       console.log(error);
     }
   };
+  const currentUser = useSelector((state: any) => state.auth.user);
 
   return (
     <Box mt={3}>
@@ -67,25 +69,28 @@ const CommentList = ({ comments, refreshComments }: Props) => {
             <>
               <Text mb={2}>{comment.comment_text}</Text>
 
-              <Button
-                size="xs"
-                mr={2}
-                onClick={() => {
-                  setEditingCommentId(comment.id);
+              {comment.user_id === currentUser?.id && (
+                <>
+                  <Button
+                    size="xs"
+                    mr={2}
+                    onClick={() => {
+                      setEditingCommentId(comment.id);
+                      setEditedText(comment.comment_text);
+                    }}
+                  >
+                    ✏️
+                  </Button>
 
-                  setEditedText(comment.comment_text);
-                }}
-              >
-                ✏️
-              </Button>
-
-              <Button
-                size="xs"
-                colorScheme="red"
-                onClick={() => handleDelete(comment.id)}
-              >
-                🗑️
-              </Button>
+                  <Button
+                    size="xs"
+                    colorScheme="red"
+                    onClick={() => handleDelete(comment.id)}
+                  >
+                    🗑️
+                  </Button>
+                </>
+              )}
             </>
           )}
         </Box>
