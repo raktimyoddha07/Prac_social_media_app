@@ -1,22 +1,27 @@
-import { Box, Heading, Text } from "@chakra-ui/react";
-
+import {
+  Box,
+  Heading,
+  Text,
+  Button,
+  Input,
+  Textarea,
+  VStack,
+} from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-
 import { useParams } from "react-router-dom";
-
-import { getUserPosts } from "../features/posts/postAPI";
-
-import PostCard from "../components/Post/PostCard";
-
+import { useSelector } from "react-redux";
 import API from "../api/axios";
-import Navbar from "../components/Main/Navbar";
+import { getUserPosts } from "../features/posts/postAPI";
+import PostCard from "../components/Post/PostCard";
 
 const Profile = () => {
   const { id } = useParams();
-
+  const currentUser = useSelector((state: any) => state.auth.user);
   const [profileUser, setProfileUser] = useState<any>(null);
-
   const [posts, setPosts] = useState<any[]>([]);
+  const [isEditing, setIsEditing] = useState(false);
+  const [username, setUsername] = useState("");
+  const [bio, setBio] = useState("");
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -24,6 +29,10 @@ const Profile = () => {
         const response = await API.get(`/users/${id}`);
 
         setProfileUser(response.data);
+
+        setUsername(response.data.username);
+
+        setBio(response.data.bio || "");
       } catch (error) {
         console.log(error);
       }
@@ -46,27 +55,72 @@ const Profile = () => {
     }
   }, [id]);
 
+  const handleSave = async () => {
+    try {
+      const response = await API.put("/users/me", {
+        username,
+        bio,
+      });
+
+      setProfileUser(response.data);
+
+      setIsEditing(false);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const isOwnProfile = currentUser?.id === profileUser?.id;
+
   return (
-    <>
-    <Navbar/>
-      <Box maxW="800px" mx="auto" mt={8}>
-        <Box borderWidth="1px" p={6} borderRadius="lg" mb={6}>
-          <Heading size="lg">{profileUser?.username}</Heading>
+    <Box maxW="800px" mx="auto" mt={8}>
+      <Box borderWidth="1px" p={6} borderRadius="lg" mb={6}>
+        {isEditing ? (
+          <VStack align="stretch">
+            <Input
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
 
-          <Text color="gray.500">{profileUser?.email}</Text>
+            <Textarea value={bio} onChange={(e) => setBio(e.target.value)} />
 
-          <Text mt={4}>{profileUser?.bio || "No bio yet"}</Text>
-        </Box>
+            <Button colorScheme="green" onClick={handleSave}>
+              Save
+            </Button>
 
-        <Heading size="md" mb={4}>
-          Posts
-        </Heading>
+            <Button variant="outline" onClick={() => setIsEditing(false)}>
+              Cancel
+            </Button>
+          </VStack>
+        ) : (
+          <>
+            <Heading size="lg">{profileUser?.username}</Heading>
 
-        {posts.map((post) => (
-          <PostCard key={post.id} post={post} />
-        ))}
+            <Text color="gray.500">{profileUser?.email}</Text>
+
+            <Text mt={4}>{profileUser?.bio || "No bio yet"}</Text>
+
+            {isOwnProfile && (
+              <Button
+                mt={4}
+                colorScheme="blue"
+                onClick={() => setIsEditing(true)}
+              >
+                Edit Profile
+              </Button>
+            )}
+          </>
+        )}
       </Box>
-    </>
+
+      <Heading size="md" mb={4}>
+        Posts
+      </Heading>
+
+      {posts.map((post) => (
+        <PostCard key={post.id} post={post} />
+      ))}
+    </Box>
   );
 };
 
