@@ -30,17 +30,12 @@ const PostCard = ({ post, onLikeToggle }: PostCardProps) => {
   const dispatch = useDispatch();
 
   const currentUser = useSelector((state: any) => state.auth.user);
-
   const [comments, setComments] = useState<any[]>([]);
-
   const [showComments, setShowComments] = useState(false);
-
   const [isEditing, setIsEditing] = useState(false);
-
   const [editedContent, setEditedContent] = useState(post.content);
-
   const [editedImageUrl, setEditedImageUrl] = useState(post.image_url || "");
-
+  const [previewImage, setPreviewImage] = useState(post.image_url || "");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const fetchComments = async () => {
@@ -88,7 +83,11 @@ const PostCard = ({ post, onLikeToggle }: PostCardProps) => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files?.length) return;
 
-    setSelectedFile(e.target.files[0]);
+    const file = e.target.files[0];
+
+    setSelectedFile(file);
+
+    setPreviewImage(URL.createObjectURL(file));
   };
 
   const handleUpdate = async () => {
@@ -115,6 +114,9 @@ const PostCard = ({ post, onLikeToggle }: PostCardProps) => {
       });
 
       dispatch(updatePostRedux(updatedPost));
+      setPreviewImage(updatedPost.image_url);
+
+      setEditedImageUrl(updatedPost.image_url);
 
       setSelectedFile(null);
 
@@ -193,7 +195,7 @@ const PostCard = ({ post, onLikeToggle }: PostCardProps) => {
 
           {editedImageUrl && (
             <Image
-              src={editedImageUrl}
+              src={previewImage}
               alt="current-image"
               borderRadius="md"
               mb={3}

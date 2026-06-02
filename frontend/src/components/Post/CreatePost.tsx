@@ -16,6 +16,7 @@ const CreatePost = ({ refreshPosts }: Props) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const [previewUrl, setPreviewUrl] = useState("");
+  
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files?.length) return;
@@ -63,7 +64,6 @@ const CreatePost = ({ refreshPosts }: Props) => {
     <Box borderWidth="1px" p={4} borderRadius="lg" mb={5}>
       <VStack>
         <Input type="file" accept="image/*" onChange={handleFileChange} />
-
         {previewUrl && (
           <Image
             src={previewUrl}
