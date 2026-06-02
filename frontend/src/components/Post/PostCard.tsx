@@ -3,21 +3,19 @@ import { Box, Image, Text, Button, Textarea } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 
-import { likePost, unlikePost } from "../features/likes/likeAPI";
+import { likePost, unlikePost } from "../../features/likes/likeAPI";
 
 import {
   toggleLike,
   updatePost as updatePostRedux,
   deletePost as deletePostRedux,
-} from "../features/posts/postSlice";
-
-import { createComment, getComments } from "../features/comments/commentAPI";
-
-import { updatePost, deletePost } from "../features/posts/postAPI";
-
-import CommentForm from "./CommentForm";
-import CommentList from "./CommentList";
+} from "../../features/posts/postSlice";
+import { createComment, getComments } from "../../features/comments/commentAPI";
+import { updatePost, deletePost } from "../../features/posts/postAPI";
+import CommentForm from "../Comment/CreateComment";
+import CommentList from "../Comment/CommentCard";
 import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 
 interface Props {
   post: any;
@@ -34,7 +32,6 @@ const PostCard = ({ post }: Props) => {
   const [editedContent, setEditedContent] = useState(post.content);
 
   const [editedImageUrl, setEditedImageUrl] = useState(post.image_url || "");
-  
 
   const fetchComments = async () => {
     try {
@@ -106,7 +103,7 @@ const PostCard = ({ post }: Props) => {
   return (
     <Box borderWidth="1px" p={4} borderRadius="lg" mb={4}>
       <Text fontWeight="bold" mb={2}>
-        {post.user?.username}
+        <Link to={`/profile/${post.user_id}`}>{post.user?.username}</Link>
       </Text>
 
       {post.user_id === currentUser?.id && (

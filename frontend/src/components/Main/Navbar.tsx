@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 import { useDispatch, useSelector } from "react-redux";
 
-import { logout } from "../features/auth/authSlice";
+import { logout } from "../../features/auth/authSlice";
 
 const Navbar = () => {
   const dispatch = useDispatch();
@@ -12,6 +12,7 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   const token = useSelector((state: any) => state.auth.token);
+  const user = useSelector((state: any) => state.auth.user);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -22,7 +23,7 @@ const Navbar = () => {
   return (
     <Box borderBottomWidth="1px" p={4} mb={6}>
       <Flex justify="space-between" align="center">
-        <Heading size="md">Social App</Heading>
+        <Heading size="md"><Link to="/">Social App</Link></Heading>
 
         <Flex gap={3}>
           {!token ? (
@@ -36,9 +37,20 @@ const Navbar = () => {
               </Button>
             </>
           ) : (
-            <Button colorScheme="red" onClick={handleLogout}>
-              Logout
-            </Button>
+            <Flex gap={3} align="center">
+              <Button
+                as={Link}
+                to={`/profile/${user?.id}`}
+                colorScheme="blue"
+                variant="ghost"
+              >
+                {user?.username}
+              </Button>
+
+              <Button colorScheme="red" onClick={handleLogout}>
+                Logout
+              </Button>
+            </Flex>
           )}
         </Flex>
       </Flex>

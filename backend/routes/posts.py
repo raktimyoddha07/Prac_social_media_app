@@ -188,3 +188,35 @@ def update_post(
     )
 
     return post
+
+# Get all Posts By User
+@router.get(
+    "/user/{user_id}",
+    response_model=list[PostResponse]
+)
+def get_user_posts(
+    user_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+
+    posts = db.query(Post).filter(
+        Post.user_id == user_id
+    ).order_by(
+        Post.createdAt.desc()
+    ).all()
+
+    result = []
+
+    for post in posts:
+
+        post.likes_count = len(post.likes)
+
+        post.liked_by_user = any(
+            like.user_id == current_user.id
+            for like in post.likes
+        )
+
+        result.append(post)
+
+    return result

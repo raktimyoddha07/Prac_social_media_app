@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, DateTime
+from sqlalchemy import Column, String, Text, DateTime
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
@@ -32,6 +32,7 @@ class User(Base):
         String,
         nullable=False
     )
+    bio = Column(Text, nullable=True)
     
     createdAt = Column(
         DateTime(timezone=True),

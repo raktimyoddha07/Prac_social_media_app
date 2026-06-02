@@ -16,14 +16,12 @@ export const createPost = async (content: string, image_url: string) => {
   return response.data;
 };
 
-
 //Delete Posts
 export const deletePost = async (postId: string) => {
   const response = await API.delete(`/posts/${postId}`);
 
   return response.data;
 };
-
 
 //Update Posts
 export const updatePost = async (
@@ -40,6 +38,12 @@ export const updatePost = async (
 
 export const likePost = async (postId: string) => {
   const response = await API.post(`/likes/${postId}`);
+
+  return response.data;
+};
+
+export const getUserPosts = async (userId: string) => {
+  const response = await API.get(`/posts/user/${userId}`);
 
   return response.data;
 };

@@ -1,6 +1,6 @@
 import { Box, Button, Textarea, VStack, Input } from "@chakra-ui/react";
 import { useState } from "react";
-import { createPost } from "../features/posts/postAPI";
+import { createPost } from "../../features/posts/postAPI";
 
 interface Props {
   refreshPosts: () => void;

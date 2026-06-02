@@ -19,9 +19,17 @@ class UserResponse(BaseModel):
     id: UUID
     username: str
     email: EmailStr
+    bio: str | None = None
     createdAt: datetime
     updatedAt: datetime
+
+    model_config = {
+        "from_attributes": True
+    }
 
 class TokenResponse(BaseModel):
     access_token: str
     token_type: str
+
+class UserUpdate(BaseModel):
+    bio: str

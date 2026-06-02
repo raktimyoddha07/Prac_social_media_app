@@ -2,7 +2,10 @@ import { Box, Text, Button, Textarea } from "@chakra-ui/react";
 
 import { useState } from "react";
 
-import { updateComment, deleteComment } from "../features/comments/commentAPI";
+import {
+  updateComment,
+  deleteComment,
+} from "../../features/comments/commentAPI";
 import { useSelector } from "react-redux";
 
 interface Props {

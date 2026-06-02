@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from core.database import get_db
 from models.user import User
 from models.post import Post
-from schemas.user import UserResponse
+from schemas.user import (UserResponse, UserUpdate)
 from schemas.post import PostResponse
 from core.security import get_current_user
 
@@ -23,7 +23,6 @@ def get_me(
 ):
     print("CURRENT USER =", current_user)
     return current_user
-
 
 # Get All Users
 @router.get(
@@ -80,9 +79,21 @@ def get_user_posts(
     return posts
 
 
-@router.get("/me")
-def get_me(
-    current_user: User = Depends(get_current_user)
+
+# Update User Profile
+@router.put(
+    "/me",
+    response_model=UserResponse
+)
+def update_profile(
+    user_data: UserUpdate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
 ):
-    print("CURRENT USER =", current_user)
+
+    current_user.bio = user_data.bio
+
+    db.commit()
+    db.refresh(current_user)
+
     return current_user
