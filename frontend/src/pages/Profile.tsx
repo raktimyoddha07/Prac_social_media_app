@@ -13,6 +13,7 @@ import { useSelector } from "react-redux";
 import API from "../api/axios";
 import { getUserPosts } from "../features/posts/postAPI";
 import PostCard from "../components/Post/PostCard";
+import Navbar from "../components/Main/Navbar";
 
 const Profile = () => {
   const { id } = useParams();
@@ -89,54 +90,57 @@ const Profile = () => {
   };
 
   return (
-    <Box maxW="800px" mx="auto" mt={8}>
-      <Box borderWidth="1px" p={6} borderRadius="lg" mb={6}>
-        {isEditing ? (
-          <VStack align="stretch">
-            <Input
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
+    <>
+    <Navbar/>
+      <Box maxW="800px" mx="auto" mt={8}>
+        <Box borderWidth="1px" p={6} borderRadius="lg" mb={6}>
+          {isEditing ? (
+            <VStack align="stretch">
+              <Input
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
 
-            <Textarea value={bio} onChange={(e) => setBio(e.target.value)} />
+              <Textarea value={bio} onChange={(e) => setBio(e.target.value)} />
 
-            <Button colorScheme="green" onClick={handleSave}>
-              Save
-            </Button>
-
-            <Button variant="outline" onClick={() => setIsEditing(false)}>
-              Cancel
-            </Button>
-          </VStack>
-        ) : (
-          <>
-            <Heading size="lg">{profileUser?.username}</Heading>
-
-            <Text color="gray.500">{profileUser?.email}</Text>
-
-            <Text mt={4}>{profileUser?.bio || "No bio yet"}</Text>
-
-            {isOwnProfile && (
-              <Button
-                mt={4}
-                colorScheme="blue"
-                onClick={() => setIsEditing(true)}
-              >
-                Edit Profile
+              <Button colorScheme="green" onClick={handleSave}>
+                Save
               </Button>
-            )}
-          </>
-        )}
+
+              <Button variant="outline" onClick={() => setIsEditing(false)}>
+                Cancel
+              </Button>
+            </VStack>
+          ) : (
+            <>
+              <Heading size="lg">{profileUser?.username}</Heading>
+
+              <Text color="gray.500">{profileUser?.email}</Text>
+
+              <Text mt={4}>{profileUser?.bio || "No bio yet"}</Text>
+
+              {isOwnProfile && (
+                <Button
+                  mt={4}
+                  colorScheme="blue"
+                  onClick={() => setIsEditing(true)}
+                >
+                  Edit Profile
+                </Button>
+              )}
+            </>
+          )}
+        </Box>
+
+        <Heading size="md" mb={4}>
+          Posts
+        </Heading>
+
+        {posts.map((post) => (
+          <PostCard key={post.id} post={post} onLikeToggle={handleLikeToggle} />
+        ))}
       </Box>
-
-      <Heading size="md" mb={4}>
-        Posts
-      </Heading>
-
-      {posts.map((post) => (
-        <PostCard key={post.id} post={post} onLikeToggle={handleLikeToggle} />
-      ))}
-    </Box>
+    </>
   );
 };
 

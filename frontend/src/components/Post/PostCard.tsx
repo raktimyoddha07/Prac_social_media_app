@@ -1,7 +1,10 @@
-import { Box, Image, Text, Button, Textarea } from "@chakra-ui/react";
+import { Box, Image, Text, Button, Textarea, Input } from "@chakra-ui/react";
 
 import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+
+import API from "../../api/axios";
 
 import { likePost, unlikePost } from "../../features/likes/likeAPI";
 
@@ -10,16 +13,14 @@ import {
   updatePost as updatePostRedux,
   deletePost as deletePostRedux,
 } from "../../features/posts/postSlice";
+
 import { createComment, getComments } from "../../features/comments/commentAPI";
+
 import { updatePost, deletePost } from "../../features/posts/postAPI";
+
 import CommentForm from "../Comment/CreateComment";
 import CommentList from "../Comment/CommentCard";
-import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
 
-interface Props {
-  post: any;
-}
 interface PostCardProps {
   post: any;
   onLikeToggle?: (postId: string) => void;
@@ -28,7 +29,10 @@ interface PostCardProps {
 const PostCard = ({ post, onLikeToggle }: PostCardProps) => {
   const dispatch = useDispatch();
 
+  const currentUser = useSelector((state: any) => state.auth.user);
+
   const [comments, setComments] = useState<any[]>([]);
+
   const [showComments, setShowComments] = useState(false);
 
   const [isEditing, setIsEditing] = useState(false);
@@ -36,6 +40,8 @@ const PostCard = ({ post, onLikeToggle }: PostCardProps) => {
   const [editedContent, setEditedContent] = useState(post.content);
 
   const [editedImageUrl, setEditedImageUrl] = useState(post.image_url || "");
+
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const fetchComments = async () => {
     try {
@@ -46,7 +52,7 @@ const PostCard = ({ post, onLikeToggle }: PostCardProps) => {
       console.log(error);
     }
   };
-  const currentUser = useSelector((state: any) => state.auth.user);
+
   useEffect(() => {
     fetchComments();
   }, []);
@@ -68,6 +74,7 @@ const PostCard = ({ post, onLikeToggle }: PostCardProps) => {
       console.log(error);
     }
   };
+
   const handleComment = async (commentText: string) => {
     try {
       await createComment(post.id, commentText);
@@ -78,14 +85,38 @@ const PostCard = ({ post, onLikeToggle }: PostCardProps) => {
     }
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files?.length) return;
+
+    setSelectedFile(e.target.files[0]);
+  };
+
   const handleUpdate = async () => {
     try {
+      let finalImageUrl = editedImageUrl;
+
+      if (selectedFile) {
+        const formData = new FormData();
+
+        formData.append("file", selectedFile);
+
+        const uploadResponse = await API.post("/upload/image", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+
+        finalImageUrl = uploadResponse.data.image_url;
+      }
+
       const updatedPost = await updatePost(post.id, {
         content: editedContent,
-        image_url: editedImageUrl,
+        image_url: finalImageUrl,
       });
 
       dispatch(updatePostRedux(updatedPost));
+
+      setSelectedFile(null);
 
       setIsEditing(false);
     } catch (error) {
@@ -102,10 +133,6 @@ const PostCard = ({ post, onLikeToggle }: PostCardProps) => {
       console.log(error);
     }
   };
-  // console.log("CURRENT USER", currentUser);
-  // console.log("CURRENT USER ID", currentUser?.id);
-  // console.log("POST USER ID", post.user_id);
-  // console.log("MATCH?", post.user_id === currentUser?.id);
 
   return (
     <Box borderWidth="1px" p={4} borderRadius="lg" mb={4}>
@@ -164,10 +191,20 @@ const PostCard = ({ post, onLikeToggle }: PostCardProps) => {
             mb={3}
           />
 
-          <Textarea
-            value={editedImageUrl}
-            onChange={(e) => setEditedImageUrl(e.target.value)}
-            placeholder="Image URL"
+          {editedImageUrl && (
+            <Image
+              src={editedImageUrl}
+              alt="current-image"
+              borderRadius="md"
+              mb={3}
+              maxH="200px"
+            />
+          )}
+
+          <Input
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
             mb={3}
           />
         </>

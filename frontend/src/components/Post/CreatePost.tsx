@@ -1,5 +1,9 @@
-import { Box, Button, Textarea, VStack, Input } from "@chakra-ui/react";
+import { Box, Button, Textarea, VStack, Input, Image } from "@chakra-ui/react";
+
 import { useState } from "react";
+
+import API from "../../api/axios";
+
 import { createPost } from "../../features/posts/postAPI";
 
 interface Props {
@@ -8,14 +12,46 @@ interface Props {
 
 const CreatePost = ({ refreshPosts }: Props) => {
   const [content, setContent] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
+
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  const [previewUrl, setPreviewUrl] = useState("");
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files?.length) return;
+
+    const file = e.target.files[0];
+
+    setSelectedFile(file);
+
+    setPreviewUrl(URL.createObjectURL(file));
+  };
 
   const handleCreatePost = async () => {
     try {
+      let imageUrl = "";
+
+      if (selectedFile) {
+        const formData = new FormData();
+
+        formData.append("file", selectedFile);
+
+        const uploadResponse = await API.post("/upload/image", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+
+        imageUrl = uploadResponse.data.image_url;
+      }
+
       await createPost(content, imageUrl);
 
       setContent("");
-      setImageUrl("");
+
+      setSelectedFile(null);
+
+      setPreviewUrl("");
 
       refreshPosts();
     } catch (error) {
@@ -26,12 +62,19 @@ const CreatePost = ({ refreshPosts }: Props) => {
   return (
     <Box borderWidth="1px" p={4} borderRadius="lg" mb={5}>
       <VStack>
-        <Input
-          placeholder="Image URL"
-          value={imageUrl}
-          onChange={(e) => setImageUrl(e.target.value)}
-          mb={3}
-        />
+        <Input type="file" accept="image/*" onChange={handleFileChange} />
+
+        {previewUrl && (
+          <Image
+            src={previewUrl}
+            alt="preview"
+            borderRadius="md"
+            maxH="300px"
+            objectFit="cover"
+            width="100%"
+          />
+        )}
+
         <Textarea
           placeholder="What's happening?"
           value={content}
