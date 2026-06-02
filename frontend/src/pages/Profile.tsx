@@ -72,6 +72,22 @@ const Profile = () => {
 
   const isOwnProfile = currentUser?.id === profileUser?.id;
 
+  const handleLikeToggle = (postId: string) => {
+    setPosts((prevPosts: any[]) =>
+      prevPosts.map((post) => {
+        if (post.id !== postId) return post;
+
+        return {
+          ...post,
+          liked_by_user: !post.liked_by_user,
+          likes_count: post.liked_by_user
+            ? post.likes_count - 1
+            : post.likes_count + 1,
+        };
+      }),
+    );
+  };
+
   return (
     <Box maxW="800px" mx="auto" mt={8}>
       <Box borderWidth="1px" p={6} borderRadius="lg" mb={6}>
@@ -118,7 +134,7 @@ const Profile = () => {
       </Heading>
 
       {posts.map((post) => (
-        <PostCard key={post.id} post={post} />
+        <PostCard key={post.id} post={post} onLikeToggle={handleLikeToggle} />
       ))}
     </Box>
   );

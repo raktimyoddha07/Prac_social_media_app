@@ -20,8 +20,12 @@ import { Link } from "react-router-dom";
 interface Props {
   post: any;
 }
+interface PostCardProps {
+  post: any;
+  onLikeToggle?: (postId: string) => void;
+}
 
-const PostCard = ({ post }: Props) => {
+const PostCard = ({ post, onLikeToggle }: PostCardProps) => {
   const dispatch = useDispatch();
 
   const [comments, setComments] = useState<any[]>([]);
@@ -56,11 +60,14 @@ const PostCard = ({ post }: Props) => {
       }
 
       dispatch(toggleLike(post.id));
+
+      if (onLikeToggle) {
+        onLikeToggle(post.id);
+      }
     } catch (error) {
       console.log(error);
     }
   };
-
   const handleComment = async (commentText: string) => {
     try {
       await createComment(post.id, commentText);
