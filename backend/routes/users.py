@@ -90,7 +90,8 @@ def update_profile(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-
+    if user_data.profile_picture is not None:
+        current_user.profile_picture = user_data.profile_picture
     current_user.bio = user_data.bio
     current_user.username = user_data.username or current_user.username
 

@@ -9,6 +9,7 @@ export const getProfile = async (userId: string) => {
 export const updateProfile = async (profileData: {
   username?: string;
   bio?: string;
+  profile_picture?: string;
 }) => {
   const response = await API.put("/users/me", profileData);
 

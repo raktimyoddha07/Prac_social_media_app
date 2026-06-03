@@ -20,6 +20,7 @@ class UserResponse(BaseModel):
     username: str
     email: EmailStr
     bio: str | None = None
+    profile_picture: str | None = None
     createdAt: datetime
     updatedAt: datetime
 
@@ -33,4 +34,5 @@ class TokenResponse(BaseModel):
 
 class UserUpdate(BaseModel):
     username: str | None = None
+    profile_picture: str | None = None
     bio: str

@@ -32,7 +32,8 @@ class User(Base):
         String,
         nullable=False
     )
-    
+    profile_picture = Column(Text, nullable=True)
+
     bio = Column(Text, nullable=True)
     
     createdAt = Column(

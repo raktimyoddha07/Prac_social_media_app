@@ -116,7 +116,6 @@ const PostCard = ({ post, onLikeToggle }: PostCardProps) => {
       dispatch(updatePostRedux(updatedPost));
       setPreviewImage(updatedPost.image_url);
       setEditedImageUrl(updatedPost.image_url);
-
       setSelectedFile(null);
       setIsEditing(false);
     } catch (error) {
