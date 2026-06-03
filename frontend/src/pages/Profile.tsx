@@ -14,11 +14,21 @@ import API from "../api/axios";
 import { getUserPosts } from "../features/posts/postAPI";
 import PostCard from "../components/Post/PostCard";
 import Navbar from "../components/Main/Navbar";
+import { useDispatch } from "react-redux";
+
+import {
+  setProfileUser,
+  updateProfileUser,
+} from "../features/profile/profileSlice";
+
+import { getProfile, updateProfile } from "../features/profile/profileAPI";
+import { setUser } from "../features/auth/authSlice";
 
 const Profile = () => {
+  const dispatch = useDispatch();
+  const profileUser = useSelector((state: any) => state.profile.profileUser);
   const { id } = useParams();
   const currentUser = useSelector((state: any) => state.auth.user);
-  const [profileUser, setProfileUser] = useState<any>(null);
   const [posts, setPosts] = useState<any[]>([]);
   const [isEditing, setIsEditing] = useState(false);
   const [username, setUsername] = useState("");
@@ -27,13 +37,13 @@ const Profile = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await API.get(`/users/${id}`);
+        
+        const data = await getProfile(id!);
+        dispatch(setProfileUser(data));
 
-        setProfileUser(response.data);
+        setUsername(data.username);
 
-        setUsername(response.data.username);
-
-        setBio(response.data.bio || "");
+        setBio(data.bio || "");
       } catch (error) {
         console.log(error);
       }
@@ -58,21 +68,23 @@ const Profile = () => {
 
   const handleSave = async () => {
     try {
-      const response = await API.put("/users/me", {
+      const updatedUser = await updateProfile({
         username,
         bio,
       });
-
-      setProfileUser(response.data);
-
+      dispatch(updateProfileUser(updatedUser));
+      if (currentUser?.id === updatedUser.id) {
+        dispatch(setUser(updatedUser));
+      }
       setIsEditing(false);
+      // console.log(response.data.username);
+      // console.log(response.data.bio);
     } catch (error) {
       console.log(error);
     }
   };
 
   const isOwnProfile = currentUser?.id === profileUser?.id;
-
   const handleLikeToggle = (postId: string) => {
     setPosts((prevPosts: any[]) =>
       prevPosts.map((post) => {
@@ -88,6 +100,7 @@ const Profile = () => {
       }),
     );
   };
+
 
   return (
     <>

@@ -32,4 +32,5 @@ class TokenResponse(BaseModel):
     token_type: str
 
 class UserUpdate(BaseModel):
+    username: str | None = None
     bio: str

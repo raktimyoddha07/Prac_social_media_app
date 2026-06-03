@@ -32,6 +32,7 @@ class User(Base):
         String,
         nullable=False
     )
+    
     bio = Column(Text, nullable=True)
     
     createdAt = Column(

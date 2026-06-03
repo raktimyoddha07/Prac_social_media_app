@@ -92,6 +92,7 @@ def update_profile(
 ):
 
     current_user.bio = user_data.bio
+    current_user.username = user_data.username or current_user.username
 
     db.commit()
     db.refresh(current_user)
