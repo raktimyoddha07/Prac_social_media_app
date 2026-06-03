@@ -16,10 +16,12 @@ class Comment(Base):
     )
 
     post_id = Column(
-        UUID(as_uuid=True),
-        ForeignKey("posts.id"),
-        nullable=False
+    UUID(as_uuid=True),
+    ForeignKey(
+        "posts.id",
+        ondelete="CASCADE"
     )
+)
 
     user_id = Column(
         UUID(as_uuid=True),
@@ -45,6 +47,10 @@ class Comment(Base):
     user = relationship(
         "User",
         backref="comments"
+    )
+    post = relationship(
+        "Post",
+        back_populates="comments"
     )
 
     

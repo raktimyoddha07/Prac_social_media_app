@@ -12,6 +12,7 @@ class PostUpdate(BaseModel):
     content: str | None = None
     image_url: str | None = None
 
+
 class PostResponse(BaseModel):
     id: UUID
     user_id: UUID

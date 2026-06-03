@@ -16,6 +16,7 @@ import { useSelector, useDispatch } from "react-redux";
 import API from "../api/axios";
 
 import { getUserPosts } from "../features/posts/postAPI";
+import { setPosts } from "../features/posts/postSlice";
 
 import PostCard from "../components/Post/PostCard";
 import Navbar from "../components/Main/Navbar";
@@ -38,7 +39,7 @@ const Profile = () => {
 
   const currentUser = useSelector((state: any) => state.auth.user);
 
-  const [posts, setPosts] = useState<any[]>([]);
+  const posts = useSelector((state: any) => state.posts.posts);
 
   const [isEditing, setIsEditing] = useState(false);
 
@@ -67,7 +68,7 @@ const Profile = () => {
       try {
         const data = await getUserPosts(id!);
 
-        setPosts(data);
+        dispatch(setPosts(data));
       } catch (error) {
         console.log(error);
       }
@@ -126,22 +127,6 @@ const Profile = () => {
   };
 
   const isOwnProfile = currentUser?.id === profileUser?.id;
-
-  const handleLikeToggle = (postId: string) => {
-    setPosts((prevPosts: any[]) =>
-      prevPosts.map((post) => {
-        if (post.id !== postId) return post;
-
-        return {
-          ...post,
-          liked_by_user: !post.liked_by_user,
-          likes_count: post.liked_by_user
-            ? post.likes_count - 1
-            : post.likes_count + 1,
-        };
-      }),
-    );
-  };
 
   return (
     <>
@@ -209,8 +194,8 @@ const Profile = () => {
           Posts
         </Heading>
 
-        {posts.map((post) => (
-          <PostCard key={post.id} post={post} onLikeToggle={handleLikeToggle} />
+        {posts.map((post: any) => (
+          <PostCard key={post.id} post={post} />
         ))}
       </Box>
     </>

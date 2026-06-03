@@ -42,8 +42,13 @@ class Post(Base):
         onupdate=func.now()
     )
     user = relationship("User", back_populates="posts")
+    comments = relationship(
+        "Comment",
+        back_populates="post",
+        cascade="all, delete"
+    )
     likes = relationship(
-    "Like",
-    backref="post",
-    cascade="all, delete"
-)
+        "Like",
+        backref="post",
+        cascade="all, delete"
+    )

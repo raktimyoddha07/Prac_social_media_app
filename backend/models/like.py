@@ -14,10 +14,12 @@ class Like(Base):
     )
 
     post_id = Column(
-        UUID(as_uuid=True),
-        ForeignKey("posts.id"),
-        primary_key=True
+    UUID(as_uuid=True),
+    ForeignKey(
+        "posts.id",
+        ondelete="CASCADE"
     )
+)
 
     createdAt = Column(
         DateTime(timezone=True),
