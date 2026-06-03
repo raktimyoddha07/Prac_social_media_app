@@ -1,6 +1,7 @@
 import { Box, Text, Button, Textarea } from "@chakra-ui/react";
 
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 import {
   updateComment,
@@ -45,8 +46,9 @@ const CommentList = ({ comments, refreshComments }: Props) => {
     <Box mt={3}>
       {comments.map((comment) => (
         <Box key={comment.id} borderWidth="1px" p={2} mb={2} borderRadius="md">
-          <Text fontWeight="bold">{comment.user?.username}</Text>
-
+          <Link to={`/profile/${comment.user_id}`}>
+            <Text fontWeight="bold">{comment.user?.username}</Text>
+          </Link>
           {editingCommentId === comment.id ? (
             <>
               <Textarea
