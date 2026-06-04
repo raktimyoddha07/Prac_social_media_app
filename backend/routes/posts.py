@@ -3,21 +3,21 @@ from fastapi import (
     Depends,
     HTTPException
 )
+
 from sqlalchemy.orm import Session
+
 from core.database import get_db
+
 from models.post import Post
 from models.user import User
+
 from schemas.post import (
     PostCreate,
     PostUpdate,
     PostResponse
 )
-from core.security import (
-    hash_password,
-    verify_password,
-    create_access_token,
-    get_current_user
-)
+
+from core.security import get_current_user
 
 router = APIRouter(
     prefix="/posts",
@@ -45,6 +45,7 @@ def create_post(
     db.add(new_post)
     db.commit()
     db.refresh(new_post)
+
     return new_post
 
 
@@ -62,8 +63,6 @@ def get_posts(
         Post.createdAt.desc()
     ).all()
 
-    result = []
-
     for post in posts:
 
         post.likes_count = len(post.likes)
@@ -73,9 +72,14 @@ def get_posts(
             for like in post.likes
         )
 
-        result.append(post)
+        post.dislikes_count = len(post.dislikes)
 
-    return result
+        post.disliked_by_user = any(
+            dislike.user_id == current_user.id
+            for dislike in post.dislikes
+        )
+
+    return posts
 
 
 # Get Single Post
@@ -85,7 +89,8 @@ def get_posts(
 )
 def get_post(
     post_id: str,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
 
     post = db.query(Post).filter(
@@ -93,13 +98,24 @@ def get_post(
     ).first()
 
     if not post:
-
         raise HTTPException(
             status_code=404,
             detail="Post not found"
         )
 
     post.likes_count = len(post.likes)
+
+    post.liked_by_user = any(
+        like.user_id == current_user.id
+        for like in post.likes
+    )
+
+    post.dislikes_count = len(post.dislikes)
+
+    post.disliked_by_user = any(
+        dislike.user_id == current_user.id
+        for dislike in post.dislikes
+    )
 
     return post
 
@@ -117,14 +133,12 @@ def delete_post(
     ).first()
 
     if not post:
-
         raise HTTPException(
             status_code=404,
             detail="Post not found"
         )
 
     if post.user_id != current_user.id:
-
         raise HTTPException(
             status_code=403,
             detail="Not allowed"
@@ -156,15 +170,12 @@ def update_post(
     ).first()
 
     if not post:
-
         raise HTTPException(
             status_code=404,
             detail="Post not found"
         )
 
-    # Only owner can edit
     if post.user_id != current_user.id:
-
         raise HTTPException(
             status_code=403,
             detail="Not allowed"
@@ -177,7 +188,6 @@ def update_post(
         post.image_url = updated_post.image_url
 
     db.commit()
-
     db.refresh(post)
 
     post.likes_count = len(post.likes)
@@ -187,9 +197,17 @@ def update_post(
         for like in post.likes
     )
 
+    post.dislikes_count = len(post.dislikes)
+
+    post.disliked_by_user = any(
+        dislike.user_id == current_user.id
+        for dislike in post.dislikes
+    )
+
     return post
 
-# Get all Posts By User
+
+# Get Posts By User
 @router.get(
     "/user/{user_id}",
     response_model=list[PostResponse]
@@ -206,8 +224,6 @@ def get_user_posts(
         Post.createdAt.desc()
     ).all()
 
-    result = []
-
     for post in posts:
 
         post.likes_count = len(post.likes)
@@ -217,6 +233,11 @@ def get_user_posts(
             for like in post.likes
         )
 
-        result.append(post)
+        post.dislikes_count = len(post.dislikes)
 
-    return result
+        post.disliked_by_user = any(
+            dislike.user_id == current_user.id
+            for dislike in post.dislikes
+        )
+
+    return posts

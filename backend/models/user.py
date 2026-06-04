@@ -35,6 +35,7 @@ class User(Base):
     profile_picture = Column(Text, nullable=True)
 
     bio = Column(Text, nullable=True)
+
     
     createdAt = Column(
         DateTime(timezone=True),

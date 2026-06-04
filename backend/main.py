@@ -8,6 +8,7 @@ from routes.posts import router as posts_router
 from routes.comments import router as comments_router
 from routes.likes import router as likes_router
 from routes.upload import router as upload_router
+from routes.dislike import router as dislike_router
 from fastapi.staticfiles import StaticFiles
 
 
@@ -28,6 +29,7 @@ app.include_router(posts_router)
 app.include_router(comments_router)
 app.include_router(likes_router)
 app.include_router(upload_router)
+app.include_router(dislike_router)
 
 
 @app.get("/")

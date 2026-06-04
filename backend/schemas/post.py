@@ -21,6 +21,8 @@ class PostResponse(BaseModel):
     user: UserResponse
     likes_count: int=0
     liked_by_user: bool=False
+    dislikes_count: int=0
+    disliked_by_user: bool=False
     createdAt: datetime
     updatedAt: datetime
     class Config:

@@ -10,23 +10,27 @@ import { likePost, unlikePost } from "../../features/likes/likeAPI";
 
 import {
   toggleLike,
+  toggleDislike,
   updatePost as updatePostRedux,
   deletePost as deletePostRedux,
 } from "../../features/posts/postSlice";
-
 import { createComment, getComments } from "../../features/comments/commentAPI";
 
 import { updatePost, deletePost } from "../../features/posts/postAPI";
 
 import CommentForm from "../Comment/CreateComment";
 import CommentList from "../Comment/CommentCard";
+import { dislikePost, undislikePost } from "../../features/dislike/dislikeAPI";
+
+
 
 interface PostCardProps {
   post: any;
   onLikeToggle?: (postId: string) => void;
+  ondislikeToggle?: (postId: string) => void;
 }
 
-const PostCard = ({ post, onLikeToggle }: PostCardProps) => {
+const PostCard = ({ post, onLikeToggle, ondislikeToggle }: PostCardProps) => {
   const dispatch = useDispatch();
 
   const currentUser = useSelector((state: any) => state.auth.user);
@@ -68,6 +72,25 @@ const PostCard = ({ post, onLikeToggle }: PostCardProps) => {
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const handleDislike = async () => {
+    try {
+      if (post.disliked_by_user) {
+        await undislikePost(post.id);
+      } else {
+        await dislikePost(post.id);
+      }
+
+      dispatch(toggleDislike(post.id));
+
+      if (ondislikeToggle) {
+        ondislikeToggle(post.id);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    
   };
 
   const handleComment = async (commentText: string) => {
@@ -219,6 +242,14 @@ const PostCard = ({ post, onLikeToggle }: PostCardProps) => {
           onClick={handleLike}
         >
           {post.liked_by_user ? "❤️" : "🤍"} {post.likes_count}
+        </Button>
+        <Button
+          size="sm"
+          mr={2}
+          colorScheme={post.disliked_by_user ? "red" : "gray"}
+          onClick={handleDislike}
+        >
+          {post.disliked_by_user ? "👎" : "👎🏻"} {post.dislikes_count}
         </Button>
 
         <Button

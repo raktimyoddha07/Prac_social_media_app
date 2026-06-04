@@ -5,6 +5,7 @@ from sqlalchemy.orm import relationship
 import uuid
 from core.database import Base
 from models.like import Like
+from models.dislike import Dislike
 
 class Post(Base):
     __tablename__ = "posts"
@@ -47,8 +48,15 @@ class Post(Base):
         back_populates="post",
         cascade="all, delete"
     )
+
     likes = relationship(
         "Like",
+        backref="post",
+        cascade="all, delete"
+    )
+
+    dislikes = relationship(
+        "Dislike", 
         backref="post",
         cascade="all, delete"
     )

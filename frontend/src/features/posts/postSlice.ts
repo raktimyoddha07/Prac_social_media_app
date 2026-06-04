@@ -36,6 +36,20 @@ const postSlice = createSlice({
       }
     },
 
+    toggleDislike: (state, action) => {
+      const post = state.posts.find((p) => p.id === action.payload);
+
+      if (!post) return;
+
+      if (post.disliked_by_user) {
+        post.dislikes_count -= 1;
+        post.disliked_by_user = false;
+      } else {
+        post.dislikes_count += 1;
+        post.disliked_by_user = true;
+      }
+    },
+
     updatePost: (state, action) => {
       const index = state.posts.findIndex((p) => p.id === action.payload.id);
 
@@ -43,13 +57,13 @@ const postSlice = createSlice({
         state.posts[index] = action.payload;
       }
     },
-    
+
     deletePost: (state, action) => {
       state.posts = state.posts.filter((p) => p.id !== action.payload);
     },
   },
 });
 
-export const { setPosts, addPost, toggleLike, updatePost, deletePost} = postSlice.actions;
+export const { setPosts, addPost, toggleLike, toggleDislike, updatePost, deletePost} = postSlice.actions;
 
 export default postSlice.reducer;

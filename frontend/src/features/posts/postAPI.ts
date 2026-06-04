@@ -42,6 +42,12 @@ export const likePost = async (postId: string) => {
   return response.data;
 };
 
+export const dislikePost = async (postId: string) => {
+  const response = await API.post(`/dislikes/${postId}`);
+
+  return response.data;
+};
+
 export const getUserPosts = async (userId: string) => {
   const response = await API.get(`/posts/user/${userId}`);
 
