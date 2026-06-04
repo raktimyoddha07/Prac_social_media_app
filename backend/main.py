@@ -10,7 +10,7 @@ from routes.likes import router as likes_router
 from routes.upload import router as upload_router
 from routes.dislike import router as dislike_router
 from fastapi.staticfiles import StaticFiles
-
+from routes.messages import router as messages_router
 
 
 app = FastAPI()
@@ -30,6 +30,7 @@ app.include_router(comments_router)
 app.include_router(likes_router)
 app.include_router(upload_router)
 app.include_router(dislike_router)
+app.include_router(messages_router)
 
 
 @app.get("/")

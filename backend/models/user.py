@@ -47,4 +47,21 @@ class User(Base):
         server_default=func.now(),
         onupdate=func.now()
     )
+
+
     posts = relationship("Post", back_populates="user")
+
+    conversations_sent = relationship(
+        "Conversation",
+        foreign_keys="Conversation.user1_id"
+    )
+
+    conversations_received = relationship(
+        "Conversation",
+        foreign_keys="Conversation.user2_id"
+    )
+
+    messages = relationship(
+        "Message",
+        back_populates="sender"
+    )
