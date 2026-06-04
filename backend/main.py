@@ -11,6 +11,9 @@ from routes.upload import router as upload_router
 from routes.dislike import router as dislike_router
 from fastapi.staticfiles import StaticFiles
 from routes.messages import router as messages_router
+from core.socket import sio
+import socketio
+
 
 
 app = FastAPI()
@@ -22,7 +25,7 @@ Base.metadata.create_all(bind=engine)
 # middleware here
 setup_middleware(app)
 
-#rotes
+#routes
 app.include_router(auth_router)
 app.include_router(users_router)
 app.include_router(posts_router)
@@ -38,3 +41,8 @@ def root():
     return {
         "message": "Social Media API Running"
     }
+
+socket_app = socketio.ASGIApp(
+    sio,
+    other_asgi_app=app
+)

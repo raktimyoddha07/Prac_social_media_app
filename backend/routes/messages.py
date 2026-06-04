@@ -28,6 +28,7 @@ router = APIRouter(
 )
 
 
+# Create or Get Conversation
 @router.post(
     "/conversation/{user_id}",
     response_model=ConversationResponse
@@ -42,12 +43,14 @@ def create_or_get_conversation(
         Conversation
     ).filter(
         (
-            (Conversation.user1_id == current_user.id) &
+            (Conversation.user1_id == current_user.id)
+            &
             (Conversation.user2_id == user_id)
         )
         |
         (
-            (Conversation.user1_id == user_id) &
+            (Conversation.user1_id == user_id)
+            &
             (Conversation.user2_id == current_user.id)
         )
     ).first()
@@ -68,6 +71,8 @@ def create_or_get_conversation(
 
     return conversation
 
+
+# Get All Conversations
 @router.get(
     "/conversations",
     response_model=list[ConversationResponse]
@@ -87,6 +92,8 @@ def get_conversations(
 
     return conversations
 
+
+# Send Message
 @router.post(
     "/{conversation_id}",
     response_model=MessageResponse
@@ -124,6 +131,8 @@ def send_message(
 
     return message
 
+
+# Get Messages
 @router.get(
     "/{conversation_id}",
     response_model=list[MessageResponse]
@@ -133,6 +142,18 @@ def get_messages(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
+
+    conversation = db.query(
+        Conversation
+    ).filter(
+        Conversation.id == conversation_id
+    ).first()
+
+    if not conversation:
+        raise HTTPException(
+            status_code=404,
+            detail="Conversation not found"
+        )
 
     messages = db.query(
         Message

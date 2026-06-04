@@ -12,41 +12,32 @@ import {
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-
 import API from "../api/axios";
-
 import { getUserPosts } from "../features/posts/postAPI";
 import { setPosts } from "../features/posts/postSlice";
-
 import PostCard from "../components/Post/PostCard";
 import Navbar from "../components/Main/Navbar";
-
 import {
   setProfileUser,
   updateProfileUser,
-} from "../features/profile/profileSlice";
-
+} from "../features/profile/profileSlice"
 import { getProfile, updateProfile } from "../features/profile/profileAPI";
-
 import { setUser } from "../features/auth/authSlice";
+import { createConversation } from "../features/chat/chatAPI";
+import { setSelectedConversation } from "../features/chat/chatSlice";
+import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
   const dispatch = useDispatch();
-
+  const navigate = useNavigate();
   const { id } = useParams();
-
+  
   const profileUser = useSelector((state: any) => state.profile.profileUser);
-
   const currentUser = useSelector((state: any) => state.auth.user);
-
   const posts = useSelector((state: any) => state.posts.posts);
-
   const [isEditing, setIsEditing] = useState(false);
-
   const [username, setUsername] = useState("");
-
   const [bio, setBio] = useState("");
-
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   useEffect(() => {
@@ -128,6 +119,18 @@ const Profile = () => {
 
   const isOwnProfile = currentUser?.id === profileUser?.id;
 
+  const handleMessage = async () => {
+    try {
+      const conversation = await createConversation(profileUser.id);
+
+      dispatch(setSelectedConversation(conversation));
+
+      navigate("/messages");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <>
       <Navbar />
@@ -177,13 +180,17 @@ const Profile = () => {
 
               <Text mt={4}>{profileUser?.bio || "No bio yet"}</Text>
 
-              {isOwnProfile && (
+              {isOwnProfile ? (
                 <Button
                   mt={4}
                   colorScheme="blue"
                   onClick={() => setIsEditing(true)}
                 >
                   Edit Profile
+                </Button>
+              ) : (
+                <Button mt={4} colorScheme="blue" onClick={handleMessage}>
+                  Message
                 </Button>
               )}
             </>

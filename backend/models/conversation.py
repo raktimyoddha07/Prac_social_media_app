@@ -1,4 +1,4 @@
-from sqlalchemy import Column, ForeignKey
+from sqlalchemy import Column, DateTime, ForeignKey, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
@@ -28,6 +28,11 @@ class Conversation(Base):
         nullable=False
     )
 
+    created_at = Column(
+        DateTime(timezone=True),
+        server_default=func.now()
+    )
+
     user1 = relationship(
         "User",
         foreign_keys=[user1_id]
@@ -43,3 +48,4 @@ class Conversation(Base):
         back_populates="conversation",
         cascade="all, delete"
     )
+    

@@ -2,17 +2,12 @@ from pydantic import BaseModel
 from uuid import UUID
 from datetime import datetime
 
-
-class MessageCreate(BaseModel):
-    content: str
-
-
-class MessageResponse(BaseModel):
+class ConversationResponse(BaseModel):
     id: UUID
-    conversation_id: UUID
-    sender_id: UUID
-    content: str
-    is_read: bool
+
+    user1_id: UUID
+    user2_id: UUID
+
     created_at: datetime
 
     class Config:
