@@ -6,7 +6,8 @@ import { Link } from "react-router-dom";
 
 import API from "../../api/axios";
 
-import { likePost, unlikePost } from "../../features/likes/likeAPI";
+import { likePost} from "../../features/likes/likeAPI";
+import { dislikePost } from "../../features/dislike/dislikeAPI";
 
 import {
   toggleLike,
@@ -20,7 +21,7 @@ import { updatePost, deletePost } from "../../features/posts/postAPI";
 
 import CommentForm from "../Comment/CreateComment";
 import CommentList from "../Comment/CommentCard";
-import { dislikePost, undislikePost } from "../../features/dislike/dislikeAPI";
+
 
 
 
@@ -58,17 +59,9 @@ const PostCard = ({ post, onLikeToggle, ondislikeToggle }: PostCardProps) => {
 
   const handleLike = async () => {
     try {
-      if (post.liked_by_user) {
-        await unlikePost(post.id);
-      } else {
-        await likePost(post.id);
-      }
+      await likePost(post.id);
 
       dispatch(toggleLike(post.id));
-
-      if (onLikeToggle) {
-        onLikeToggle(post.id);
-      }
     } catch (error) {
       console.log(error);
     }
@@ -76,21 +69,12 @@ const PostCard = ({ post, onLikeToggle, ondislikeToggle }: PostCardProps) => {
 
   const handleDislike = async () => {
     try {
-      if (post.disliked_by_user) {
-        await undislikePost(post.id);
-      } else {
-        await dislikePost(post.id);
-      }
+      await dislikePost(post.id);
 
       dispatch(toggleDislike(post.id));
-
-      if (ondislikeToggle) {
-        ondislikeToggle(post.id);
-      }
     } catch (error) {
       console.log(error);
     }
-    
   };
 
   const handleComment = async (commentText: string) => {

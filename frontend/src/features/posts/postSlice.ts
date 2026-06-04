@@ -33,6 +33,11 @@ const postSlice = createSlice({
       } else {
         post.likes_count += 1;
         post.liked_by_user = true;
+
+        if (post.disliked_by_user) {
+          post.dislikes_count -= 1;
+          post.disliked_by_user = false;
+        }
       }
     },
 
@@ -47,6 +52,11 @@ const postSlice = createSlice({
       } else {
         post.dislikes_count += 1;
         post.disliked_by_user = true;
+
+        if (post.liked_by_user) {
+          post.likes_count -= 1;
+          post.liked_by_user = false;
+        }
       }
     },
 

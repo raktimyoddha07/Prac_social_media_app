@@ -6,11 +6,11 @@ export const likePost = async (postId: string) => {
   return response.data;
 };
 
-export const unlikePost = async (postId: string) => {
-  const response = await API.delete(`/posts/${postId}/like`);
+// export const unlikePost = async (postId: string) => {
+//   const response = await API.delete(`/posts/${postId}/like`);
 
-  return response.data;
-};
+//   return response.data;
+// };
 
 export const getLikesCount = async (postId: string) => {
   const response = await API.get(`/posts/${postId}/likes`);
