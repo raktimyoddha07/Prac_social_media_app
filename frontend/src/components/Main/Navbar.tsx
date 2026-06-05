@@ -23,7 +23,9 @@ const Navbar = () => {
   return (
     <Box borderBottomWidth="1px" p={4} mb={6}>
       <Flex justify="space-between" align="center">
-        <Heading size="md"><Link to="/">Social App</Link></Heading>
+        <Heading size="md">
+          <Link to="/">Social App</Link>
+        </Heading>
 
         <Flex gap={3}>
           {!token ? (
@@ -38,6 +40,14 @@ const Navbar = () => {
             </>
           ) : (
             <Flex gap={3} align="center">
+              <Button
+                as={Link}
+                to="/messages"
+                colorScheme="purple"
+                variant="ghost"
+              >
+                chat
+              </Button>
               <Button
                 as={Link}
                 to={`/profile/${user?.id}`}

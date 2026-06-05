@@ -2,10 +2,11 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   conversations: [],
-  selectedConversation: null,
+  selectedConversation: JSON.parse(
+    localStorage.getItem("selectedConversation") || "null",
+  ),
   messages: [],
 };
-
 const chatSlice = createSlice({
   name: "chat",
 
@@ -18,6 +19,10 @@ const chatSlice = createSlice({
 
     setSelectedConversation: (state, action) => {
       state.selectedConversation = action.payload;
+      localStorage.setItem(
+        "selectedConversation",
+        JSON.stringify(action.payload),
+      );
     },
 
     setMessages: (state, action) => {
@@ -27,6 +32,16 @@ const chatSlice = createSlice({
     addMessage: (state, action) => {
       state.messages.push(action.payload);
     },
+    
+    addConversation: (state, action) => {
+      const exists = state.conversations.some(
+        (c) => c.id === action.payload.id,
+      );
+
+      if (!exists) {
+        state.conversations.unshift(action.payload);
+      }
+    },
   },
 });
 
@@ -35,6 +50,7 @@ export const {
   setSelectedConversation,
   setMessages,
   addMessage,
+  addConversation,
 } = chatSlice.actions;
 
 export default chatSlice.reducer;

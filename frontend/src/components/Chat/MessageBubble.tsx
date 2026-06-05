@@ -1,11 +1,16 @@
 import { Box, Text } from "@chakra-ui/react";
 
 const MessageBubble = ({ message }: any) => {
-  return (
-    <Box bg="gray.100" p={3} borderRadius="md">
-      <Text fontSize="sm">{message.sender?.username}</Text>
+  console.log("CONTENT:", message.content);
+  console.log("TYPE:", typeof message.content);
 
-      <Text>{message.content}</Text>
+  return (
+    <Box bg="red.500" color="white" p={4}>
+      <Text fontSize="sm" color="gray.500">
+        {message.sender.username}
+      </Text>
+
+      <Text color="black">{message.content}</Text>
     </Box>
   );
 };

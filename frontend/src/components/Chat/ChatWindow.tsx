@@ -23,6 +23,7 @@ const ChatWindow = () => {
 
   useEffect(() => {
     if (!selectedConversation) return;
+    console.log("selectedConversation in ChatWindow:", selectedConversation);
 
     socket.emit("join_conversation", selectedConversation.id);
   }, [selectedConversation]);
@@ -42,10 +43,10 @@ const ChatWindow = () => {
 
      try {
        const data = await getMessages(selectedConversation.id);
-
+      console.log("MESSAGES:", data);
        dispatch(setMessages(data));
      } catch (error) {
-       console.log(error);
+       console.log("GET MESSAGES ERROR:", error);
      }
    };
 

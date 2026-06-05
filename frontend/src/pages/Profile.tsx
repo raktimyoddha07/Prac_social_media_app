@@ -24,7 +24,7 @@ import {
 import { getProfile, updateProfile } from "../features/profile/profileAPI";
 import { setUser } from "../features/auth/authSlice";
 import { createConversation } from "../features/chat/chatAPI";
-import { setSelectedConversation } from "../features/chat/chatSlice";
+import { setSelectedConversation, addConversation } from "../features/chat/chatSlice";
 import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
@@ -122,14 +122,13 @@ const Profile = () => {
   const handleMessage = async () => {
     try {
       const conversation = await createConversation(profileUser.id);
-
-      dispatch(setSelectedConversation(conversation));
-
-      navigate("/messages");
+      dispatch(addConversation(conversation));
+      navigate(`/messages/${conversation.id}`);
     } catch (error) {
       console.log(error);
     }
   };
+  
 
   return (
     <>

@@ -28,6 +28,34 @@ router = APIRouter(
 )
 
 
+def build_conversation_response(
+    conversation: Conversation,
+    current_user: User,
+    db: Session,
+):
+    other_user_id = (
+        conversation.user2_id
+        if conversation.user1_id == current_user.id
+        else conversation.user1_id
+    )
+
+    other_user = (
+        db.query(User)
+        .filter(User.id == other_user_id)
+        .first()
+    )
+
+    return {
+        "id": conversation.id,
+        "created_at": conversation.created_at,
+        "other_user": {
+            "id": other_user.id,
+            "username": other_user.username,
+            "profile_picture": other_user.profile_picture,
+        },
+    }
+
+
 # Create or Get Conversation
 @router.post(
     "/conversation/{user_id}",
@@ -56,7 +84,11 @@ def create_or_get_conversation(
     ).first()
 
     if conversation:
-        return conversation
+        return build_conversation_response(
+            conversation,
+            current_user,
+            db
+        )
 
     conversation = Conversation(
         user1_id=current_user.id,
@@ -64,12 +96,14 @@ def create_or_get_conversation(
     )
 
     db.add(conversation)
-
     db.commit()
-
     db.refresh(conversation)
 
-    return conversation
+    return build_conversation_response(
+        conversation,
+        current_user,
+        db
+    )
 
 
 # Get All Conversations
@@ -90,7 +124,14 @@ def get_conversations(
         (Conversation.user2_id == current_user.id)
     ).all()
 
-    return conversations
+    return [
+        build_conversation_response(
+            conversation,
+            current_user,
+            db
+        )
+        for conversation in conversations
+    ]
 
 
 # Send Message
@@ -124,12 +165,24 @@ def send_message(
     )
 
     db.add(message)
-
     db.commit()
-
     db.refresh(message)
 
-    return message
+    return {
+        "id": message.id,
+        "conversation_id": message.conversation_id,
+        "content": message.content,
+        "is_read": message.is_read,
+        "created_at": message.created_at,
+        "sender": {
+            "id": current_user.id,
+            "username": current_user.username,
+            "email": current_user.email,
+            "profile_picture": current_user.profile_picture,
+            "bio": current_user.bio,
+            "created_at": current_user.created_at,
+        }
+    }
 
 
 # Get Messages
@@ -163,4 +216,21 @@ def get_messages(
         Message.created_at.asc()
     ).all()
 
-    return messages
+    return [
+        {
+            "id": message.id,
+            "conversation_id": message.conversation_id,
+            "content": message.content,
+            "is_read": message.is_read,
+            "created_at": message.created_at,
+            "sender": {
+                "id": message.sender.id,
+                "username": message.sender.username,
+                "email": message.sender.email,
+                "profile_picture": message.sender.profile_picture,
+                "bio": message.sender.bio,
+                "created_at": message.sender.created_at,
+            }
+        }
+        for message in messages
+    ]

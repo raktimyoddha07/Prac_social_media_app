@@ -9,9 +9,13 @@ import {
   setConversations,
   setSelectedConversation,
 } from "../../features/chat/chatSlice";
+import { useNavigate } from "react-router-dom";
+import { Avatar } from "@chakra-ui/react";
+
 
 const ConversationList = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const conversations = useSelector((state: any) => state.chat.conversations);
 
@@ -29,6 +33,7 @@ const ConversationList = () => {
     fetchConversations();
   }, []);
 
+
   return (
     <VStack align="stretch">
       {conversations.map((conversation: any) => (
@@ -38,9 +43,13 @@ const ConversationList = () => {
           cursor="pointer"
           borderBottom="1px solid"
           borderColor="gray.200"
-          onClick={() => dispatch(setSelectedConversation(conversation))}
+          onClick={() => {
+            dispatch(setSelectedConversation(conversation));
+            navigate(`/messages/${conversation.id}`);
+          }}
         >
-          <Text>Conversation</Text>
+          {/* <Avatar size="sm" src={conversation.other_user.profile_picture} /> */}
+          <Text fontWeight="bold">{conversation.other_user.username}</Text>
         </Box>
       ))}
     </VStack>
