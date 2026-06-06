@@ -60,7 +60,8 @@ const ChatWindow = () => {
       </Box>
     );
   }
-
+console.log("SELECTED:", selectedConversation);
+console.log("MESSAGES:", messages);
 
   return (
     <Box h="100%" display="flex" flexDirection="column">

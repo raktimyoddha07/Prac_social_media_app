@@ -28,7 +28,7 @@ class Conversation(Base):
         nullable=False
     )
 
-    created_at = Column(
+    createdAt = Column(
         DateTime(timezone=True),
         server_default=func.now()
     )

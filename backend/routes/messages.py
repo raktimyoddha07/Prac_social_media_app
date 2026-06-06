@@ -47,7 +47,7 @@ def build_conversation_response(
 
     return {
         "id": conversation.id,
-        "created_at": conversation.created_at,
+        "createdAt": conversation.createdAt,
         "other_user": {
             "id": other_user.id,
             "username": other_user.username,
@@ -173,14 +173,15 @@ def send_message(
         "conversation_id": message.conversation_id,
         "content": message.content,
         "is_read": message.is_read,
-        "created_at": message.created_at,
+        "createdAt": message.createdAt,
         "sender": {
             "id": current_user.id,
             "username": current_user.username,
             "email": current_user.email,
             "profile_picture": current_user.profile_picture,
             "bio": current_user.bio,
-            "created_at": current_user.created_at,
+            "createdAt": current_user.createdAt,
+            "updatedAt": current_user.updatedAt,
         }
     }
 
@@ -213,7 +214,7 @@ def get_messages(
     ).filter(
         Message.conversation_id == conversation_id
     ).order_by(
-        Message.created_at.asc()
+        Message.createdAt.asc()
     ).all()
 
     return [
@@ -222,15 +223,46 @@ def get_messages(
             "conversation_id": message.conversation_id,
             "content": message.content,
             "is_read": message.is_read,
-            "created_at": message.created_at,
+            "createdAt": message.createdAt,
             "sender": {
                 "id": message.sender.id,
                 "username": message.sender.username,
                 "email": message.sender.email,
                 "profile_picture": message.sender.profile_picture,
                 "bio": message.sender.bio,
-                "created_at": message.sender.created_at,
+                "createdAt": message.sender.createdAt,
+                "updatedAt": message.sender.updatedAt,
             }
         }
         for message in messages
     ]
+
+    @router.get(
+        "/{conversation_id}",
+        response_model=list[MessageResponse]
+    )
+    def get_messages(
+        conversation_id: str,
+        db: Session = Depends(get_db),
+        current_user: User = Depends(get_current_user)
+    ):
+
+        print("PARAM:", conversation_id)
+
+        conversation = db.query(
+            Conversation
+        ).filter(
+            Conversation.id == conversation_id
+        ).first()
+
+        print("CONVERSATION:", conversation)
+
+        messages = db.query(
+            Message
+        ).filter(
+            Message.conversation_id == conversation_id
+        ).all()
+
+        print("FOUND:", len(messages))
+
+        return []

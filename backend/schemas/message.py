@@ -13,7 +13,7 @@ class MessageResponse(BaseModel):
     conversation_id: UUID
     content: str
     is_read: bool
-    created_at: datetime
+    createdAt: datetime
     sender: UserResponse
     class Config:
         from_attributes = True

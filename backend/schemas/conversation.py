@@ -7,7 +7,7 @@ class ConversationResponse(BaseModel):
 
     other_user: ConversationUser
 
-    created_at: datetime
+    createdAt: datetime
 
     class Config:
         from_attributes = True

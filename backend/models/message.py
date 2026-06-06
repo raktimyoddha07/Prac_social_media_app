@@ -46,7 +46,7 @@ class Message(Base):
         default=False
     )
 
-    created_at = Column(
+    createdAt = Column(
         DateTime,
         default=datetime.utcnow
     )
