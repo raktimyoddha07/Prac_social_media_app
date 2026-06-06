@@ -1,10 +1,8 @@
 import { Box, Text, VStack } from "@chakra-ui/react";
-
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import { getMessages } from "../../features/chat/chatAPI";
-
 import { addMessage, setMessages } from "../../features/chat/chatSlice";
 
 import MessageBubble from "./MessageBubble";
@@ -12,7 +10,6 @@ import MessageInput from "./MessageInput";
 import { socket } from "../../socket/socket";
 
 const ChatWindow = () => {
-  
   const dispatch = useDispatch();
 
   const selectedConversation = useSelector(
@@ -23,35 +20,48 @@ const ChatWindow = () => {
 
   useEffect(() => {
     if (!selectedConversation) return;
-    console.log("selectedConversation in ChatWindow:", selectedConversation);
+
+    console.log("JOINING CONVERSATION:", selectedConversation.id);
 
     socket.emit("join_conversation", selectedConversation.id);
   }, [selectedConversation]);
+
   useEffect(() => {
-    socket.on("receive_message", (message) => {
-      dispatch(addMessage(message));
-    });
+    const handleReceiveMessage = (message: any) => {
+      console.log("SOCKET MESSAGE:", message);
+
+      if (
+        selectedConversation &&
+        message.conversation_id === selectedConversation.id
+      ) {
+        dispatch(addMessage(message));
+      }
+    };
+
+    socket.on("receive_message", handleReceiveMessage);
 
     return () => {
-      socket.off("receive_message");
+      socket.off("receive_message", handleReceiveMessage);
     };
   }, [dispatch]);
 
- useEffect(() => {
-   const fetchMessages = async () => {
-     if (!selectedConversation) return;
+  useEffect(() => {
+    const fetchMessages = async () => {
+      if (!selectedConversation) return;
 
-     try {
-       const data = await getMessages(selectedConversation.id);
-      console.log("MESSAGES:", data);
-       dispatch(setMessages(data));
-     } catch (error) {
-       console.log("GET MESSAGES ERROR:", error);
-     }
-   };
+      try {
+        const data = await getMessages(selectedConversation.id);
 
-   fetchMessages();
- }, [selectedConversation, dispatch]);
+        console.log("MESSAGES FROM API:", data);
+
+        dispatch(setMessages(data));
+      } catch (error) {
+        console.log("GET MESSAGES ERROR:", error);
+      }
+    };
+
+    fetchMessages();
+  }, [selectedConversation, dispatch]);
 
   if (!selectedConversation) {
     return (
@@ -60,8 +70,6 @@ const ChatWindow = () => {
       </Box>
     );
   }
-console.log("SELECTED:", selectedConversation);
-console.log("MESSAGES:", messages);
 
   return (
     <Box h="100%" display="flex" flexDirection="column">

@@ -21,6 +21,7 @@ from schemas.message import (
 from schemas.conversation import (
     ConversationResponse
 )
+from core.socket import sio
 
 router = APIRouter(
     prefix="/messages",

@@ -1,4 +1,4 @@
-import { Box, Text, VStack } from "@chakra-ui/react";
+import { Box, Text, VStack, Avatar, HStack } from "@chakra-ui/react";
 
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -9,13 +9,15 @@ import {
   setConversations,
   setSelectedConversation,
 } from "../../features/chat/chatSlice";
-import { useNavigate } from "react-router-dom";
-import { Avatar } from "@chakra-ui/react";
+
+import { useNavigate, useParams } from "react-router-dom";
 
 
 const ConversationList = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const { conversationId } = useParams();
 
   const conversations = useSelector((state: any) => state.chat.conversations);
 
@@ -31,27 +33,46 @@ const ConversationList = () => {
     };
 
     fetchConversations();
-  }, []);
-
+  }, [dispatch]);
 
   return (
-    <VStack align="stretch">
-      {conversations.map((conversation: any) => (
-        <Box
-          key={conversation.id}
-          p={4}
-          cursor="pointer"
-          borderBottom="1px solid"
-          borderColor="gray.200"
-          onClick={() => {
-            dispatch(setSelectedConversation(conversation));
-            navigate(`/messages/${conversation.id}`);
-          }}
-        >
-          {/* <Avatar size="sm" src={conversation.other_user.profile_picture} /> */}
-          <Text fontWeight="bold">{conversation.other_user.username}</Text>
-        </Box>
-      ))}
+    <VStack align="stretch" gap={1} p={2}>
+      {conversations.map((conversation: any) => {
+        const isSelected = conversationId === conversation.id;
+
+        return (
+          <Box
+            key={conversation.id}
+            p={3}
+            borderRadius="lg"
+            cursor="pointer"
+            transition="all 0.2s"
+            bg={isSelected ? "blue.500" : "white"}
+            color={isSelected ? "black" : "black"}
+            boxShadow={isSelected ? "md" : "none"}
+            transform={isSelected ? "scale(1.02)" : "scale(1)"}
+            _hover={{
+              bg: isSelected ? "blue.600" : "gray.100",
+            }}
+            onClick={() => {
+              dispatch(setSelectedConversation(conversation));
+              navigate(`/messages/${conversation.id}`);
+            }}
+          >
+            <HStack gap={3}>
+              {/* <Avatar
+                size="sm"
+                src={conversation.other_user.profile_picture}
+                name={conversation.other_user.username}
+              /> */}
+
+              <Text fontWeight="semibold">
+                {conversation.other_user.username}
+              </Text>
+            </HStack>
+          </Box>
+        );
+      })}
     </VStack>
   );
 };

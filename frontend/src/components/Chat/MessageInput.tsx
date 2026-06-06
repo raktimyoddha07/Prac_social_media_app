@@ -24,7 +24,6 @@ const MessageInput = () => {
     try {
       const message = await sendMessage(selectedConversation.id, content);
 
-      dispatch(addMessage(message));
 
       socket.emit("send_message", message);
 
