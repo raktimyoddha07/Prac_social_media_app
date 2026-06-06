@@ -20,3 +20,13 @@ export const sendMessage = async (conversationId: string, content: string) => {
 
   return response.data;
 };
+
+export const editMessage = async (messageId: string, content: string) => {
+  const response = await API.put(`/messages/${messageId}`, { content });
+
+  return response.data;
+};
+
+export const deleteMessage = async (messageId: string) => {
+  await API.delete(`/messages/${messageId}`);
+};

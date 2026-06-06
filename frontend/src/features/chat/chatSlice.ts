@@ -32,7 +32,7 @@ const chatSlice = createSlice({
     addMessage: (state, action) => {
       state.messages.push(action.payload);
     },
-    
+
     addConversation: (state, action) => {
       const exists = state.conversations.some(
         (c) => c.id === action.payload.id,
@@ -41,6 +41,33 @@ const chatSlice = createSlice({
       if (!exists) {
         state.conversations.unshift(action.payload);
       }
+    },
+
+    editMessage: (state, action) => {
+      state.messages.forEach((m: any) => {
+        console.log(
+          "STATE ID:",
+          m.id,
+          "PAYLOAD ID:",
+          action.payload.id,
+          "MATCH:",
+          m.id === action.payload.id,
+        );
+      });
+
+      state.messages = state.messages.map((message: any) =>
+        message.id === action.payload.id
+          ? {
+              ...message,
+              content: action.payload.content,
+            }
+          : message,
+      );
+    },
+    deleteMessage: (state, action) => {
+      state.messages = state.messages.filter(
+        (m: any) => m.id !== action.payload,
+      );
     },
   },
 });
@@ -51,6 +78,8 @@ export const {
   setMessages,
   addMessage,
   addConversation,
+  editMessage,
+  deleteMessage,
 } = chatSlice.actions;
 
 export default chatSlice.reducer;

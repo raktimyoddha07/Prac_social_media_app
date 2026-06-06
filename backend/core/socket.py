@@ -1,4 +1,6 @@
 import socketio
+from core.database import SessionLocal
+from models.message import Message
 
 sio = socketio.AsyncServer(
     async_mode="asgi",
@@ -43,3 +45,73 @@ async def send_message_socket(sid, message):
     )
 
     print("SOCKET EMITTED:", message["conversation_id"])
+
+@sio.on("edit_message")
+async def edit_message(sid, data):
+    message_id = data["message_id"]
+    content = data["content"]
+
+    db = SessionLocal()
+
+    try:
+        message = (
+            db.query(Message)
+            .filter(Message.id == message_id)
+            .first()
+        )
+
+        if not message:
+            return
+
+        message.content = content
+
+        db.commit()
+        db.refresh(message)
+        print("EDIT RECEIVED", data)
+
+        await sio.emit(
+            "message_edited",
+            {
+                "id": str(message.id),
+                "content": message.content,
+            },
+            room=str(message.conversation_id),
+        )
+
+    finally:
+        db.close()
+
+@sio.on("delete_message")
+async def delete_message(sid, data):
+    message_id = data["message_id"]
+
+    db = SessionLocal()
+
+    try:
+        message = (
+            db.query(Message)
+            .filter(Message.id == message_id)
+            .first()
+        )
+
+        if not message:
+            return
+
+        conversation_id = str(
+            message.conversation_id
+        )
+
+        db.delete(message)
+        db.commit()
+        print("DELETE RECEIVED", data)
+
+        await sio.emit(
+            "message_deleted",
+            {
+                "message_id": message_id,
+            },
+            room=conversation_id,
+        )
+
+    finally:
+        db.close()

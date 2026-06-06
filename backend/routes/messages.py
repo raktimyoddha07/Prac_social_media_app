@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from fastapi import (
     APIRouter,
     Depends,
@@ -238,32 +240,100 @@ def get_messages(
         for message in messages
     ]
 
-    @router.get(
+
+
+@router.get(
         "/{conversation_id}",
         response_model=list[MessageResponse]
+)
+def get_messages(
+    conversation_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+
+    print("PARAM:", conversation_id)
+
+    conversation = db.query(
+        Conversation
+    ).filter(
+        Conversation.id == conversation_id
+    ).first()
+
+    print("CONVERSATION:", conversation)
+
+    messages = db.query(
+        Message
+    ).filter(
+        Message.conversation_id == conversation_id
+    ).all()
+
+    print("FOUND:", len(messages))
+
+    return []
+
+#edit message
+@router.put("/{message_id}", response_model=MessageResponse)
+def edit_message(
+    message_id: UUID,
+    data: MessageCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    message = (
+        db.query(Message)
+        .filter(Message.id == message_id)
+        .first()
     )
-    def get_messages(
-        conversation_id: str,
-        db: Session = Depends(get_db),
-        current_user: User = Depends(get_current_user)
-    ):
 
-        print("PARAM:", conversation_id)
+    if not message:
+        raise HTTPException(404, "Message not found")
 
-        conversation = db.query(
-            Conversation
-        ).filter(
-            Conversation.id == conversation_id
-        ).first()
+    if message.sender_id != current_user.id:
+        raise HTTPException(403, "Not allowed")
 
-        print("CONVERSATION:", conversation)
+    message.content = data.content
 
-        messages = db.query(
-            Message
-        ).filter(
-            Message.conversation_id == conversation_id
-        ).all()
+    db.commit()
+    db.refresh(message)
 
-        print("FOUND:", len(messages))
+    return {
+    "id": message.id,
+    "conversation_id": message.conversation_id,
+    "content": message.content,
+    "is_read": message.is_read,
+    "createdAt": message.createdAt,
+    "sender": {
+        "id": message.sender.id,
+        "username": message.sender.username,
+        "email": message.sender.email,
+        "profile_picture": message.sender.profile_picture,
+        "bio": message.sender.bio,
+        "createdAt": message.sender.createdAt,
+        "updatedAt": message.sender.updatedAt,
+    }
+}
 
-        return []
+#delete message
+@router.delete("/{message_id}")
+def delete_message(
+    message_id: UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    message = (
+        db.query(Message)
+        .filter(Message.id == message_id)
+        .first()
+    )
+
+    if not message:
+        raise HTTPException(404, "Message not found")
+
+    if message.sender_id != current_user.id:
+        raise HTTPException(403, "Not allowed")
+
+    db.delete(message)
+    db.commit()
+
+    return {"message": "Deleted"}

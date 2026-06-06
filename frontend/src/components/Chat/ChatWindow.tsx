@@ -3,8 +3,12 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import { getMessages } from "../../features/chat/chatAPI";
-import { addMessage, setMessages } from "../../features/chat/chatSlice";
-
+import {
+  addMessage,
+  setMessages,
+  editMessage,
+  deleteMessage,
+} from "../../features/chat/chatSlice";
 import MessageBubble from "./MessageBubble";
 import MessageInput from "./MessageInput";
 import { socket } from "../../socket/socket";
@@ -29,6 +33,7 @@ const ChatWindow = () => {
   useEffect(() => {
     const handleReceiveMessage = (message: any) => {
       console.log("SOCKET MESSAGE:", message);
+      
 
       if (
         selectedConversation &&
@@ -39,6 +44,15 @@ const ChatWindow = () => {
     };
 
     socket.on("receive_message", handleReceiveMessage);
+    socket.on("message_edited", (message) => {
+      console.log("EDIT EVENT:", message);
+      dispatch(editMessage(message));
+    });
+
+    socket.on("message_deleted", (data) => {
+      console.log("DELETE EVENT:", data);
+      dispatch(deleteMessage(data.message_id));
+    });
 
     return () => {
       socket.off("receive_message", handleReceiveMessage);
