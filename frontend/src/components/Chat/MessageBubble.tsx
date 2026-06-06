@@ -1,16 +1,31 @@
 import { Box, Text } from "@chakra-ui/react";
+import { useSelector } from "react-redux";
 
 const MessageBubble = ({ message }: any) => {
-  console.log("CONTENT:", message.content);
-  console.log("TYPE:", typeof message.content);
+  const currentUser = useSelector((state: any) => state.auth.user);
+
+  const isMine = currentUser?.id === message.sender.id;
 
   return (
-    <Box bg="red.500" color="white" p={4}>
-      <Text fontSize="sm" color="gray.500">
-        {message.sender.username}
-      </Text>
+    <Box
+      display="flex"
+      justifyContent={isMine ? "flex-end" : "flex-start"}
+      mb={2}
+    >
+      <Box
+        maxW="70%"
+        px={4}
+        py={2}
+        borderRadius="lg"
+        bg={isMine ? "green.400" : "blue.400"}
+        color="white"
+      >
+        <Text fontSize="sm" fontWeight="bold">
+          {message.sender.username}
+        </Text>
 
-      <Text color="black">{message.content}</Text>
+        <Text>{message.content}</Text>
+      </Box>
     </Box>
   );
 };
