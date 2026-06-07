@@ -109,11 +109,11 @@ async def delete_message(sid, data):
         await sio.emit(
             "message_deleted",
             {
-                "message_id": message_id,
-                "conversation_id": str(message.conversation_id),
+                "id": str(message_id),
+                "conversation_id": conversation_id,
             },
-            room=conversation_id,
-        )
+    room=conversation_id,
+)
 
     finally:
         db.close()
