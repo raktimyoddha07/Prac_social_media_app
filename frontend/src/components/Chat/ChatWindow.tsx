@@ -3,14 +3,18 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import { getMessages } from "../../features/chat/chatAPI";
+
 import {
   addMessage,
-  setMessages,
   editMessage,
   deleteMessage,
+  moveConversationToTop,
+  setMessages,
 } from "../../features/chat/chatSlice";
+
 import MessageBubble from "./MessageBubble";
 import MessageInput from "./MessageInput";
+
 import { socket } from "../../socket/socket";
 
 const ChatWindow = () => {
@@ -22,18 +26,44 @@ const ChatWindow = () => {
 
   const messages = useSelector((state: any) => state.chat.messages);
 
+  // -------------------------
+  // Join Conversation Room
+  // -------------------------
+
   useEffect(() => {
     if (!selectedConversation) return;
-
-    console.log("JOINING CONVERSATION:", selectedConversation.id);
 
     socket.emit("join_conversation", selectedConversation.id);
   }, [selectedConversation]);
 
+  // -------------------------
+  // Load Messages
+  // -------------------------
+
+  useEffect(() => {
+    const fetchMessages = async () => {
+      if (!selectedConversation) return;
+
+      try {
+        const data = await getMessages(selectedConversation.id);
+
+        dispatch(setMessages(data));
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchMessages();
+  }, [selectedConversation, dispatch]);
+
+  // -------------------------
+  // Socket Events
+  // -------------------------
+
   useEffect(() => {
     const handleReceiveMessage = (message: any) => {
-      console.log("SOCKET MESSAGE:", message);
-      
+      console.log("RECEIVED MESSAGE:", message);
+      dispatch(moveConversationToTop(message.conversation_id));
 
       if (
         selectedConversation &&
@@ -43,39 +73,42 @@ const ChatWindow = () => {
       }
     };
 
-    socket.on("receive_message", handleReceiveMessage);
-    socket.on("message_edited", (message) => {
-      console.log("EDIT EVENT:", message);
-      dispatch(editMessage(message));
-    });
-
-    socket.on("message_deleted", (data) => {
-      console.log("DELETE EVENT:", data);
-      dispatch(deleteMessage(data.message_id));
-    });
-
-    return () => {
-      socket.off("receive_message", handleReceiveMessage);
-    };
-  }, [dispatch]);
-
-  useEffect(() => {
-    const fetchMessages = async () => {
-      if (!selectedConversation) return;
-
-      try {
-        const data = await getMessages(selectedConversation.id);
-
-        console.log("MESSAGES FROM API:", data);
-
-        dispatch(setMessages(data));
-      } catch (error) {
-        console.log("GET MESSAGES ERROR:", error);
+    const handleMessageEdited = (message: any) => {
+      if (
+        selectedConversation &&
+        message.conversation_id === selectedConversation.id
+      ) {
+        dispatch(editMessage(message));
       }
     };
 
-    fetchMessages();
-  }, [selectedConversation, dispatch]);
+    const handleMessageDeleted = (data: any) => {
+      if (
+        selectedConversation &&
+        data.conversation_id === selectedConversation.id
+      ) {
+        dispatch(deleteMessage(data.id));
+      }
+    };
+
+    socket.on("receive_message", handleReceiveMessage);
+
+    socket.on("message_edited", handleMessageEdited);
+
+    socket.on("message_deleted", handleMessageDeleted);
+
+    return () => {
+      socket.off("receive_message", handleReceiveMessage);
+
+      socket.off("message_edited", handleMessageEdited);
+
+      socket.off("message_deleted", handleMessageDeleted);
+    };
+  }, [dispatch, selectedConversation]);
+
+  // -------------------------
+  // No Conversation Selected
+  // -------------------------
 
   if (!selectedConversation) {
     return (
@@ -84,6 +117,10 @@ const ChatWindow = () => {
       </Box>
     );
   }
+
+  // -------------------------
+  // UI
+  // -------------------------
 
   return (
     <Box h="100%" display="flex" flexDirection="column">

@@ -3,51 +3,65 @@ import { Box, Flex } from "@chakra-ui/react";
 import ConversationList from "../components/Chat/ConversationList";
 import ChatWindow from "../components/Chat/ChatWindow";
 import Navbar from "../components/Main/Navbar";
+
 import { useEffect } from "react";
 import { socket } from "../socket/socket";
+
 import { useParams } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+
 import { getConversations } from "../features/chat/chatAPI";
-import { setConversations, setSelectedConversation } from "../features/chat/chatSlice";
+
+import {
+  setConversations,
+  setSelectedConversation,
+} from "../features/chat/chatSlice";
 
 const Messages = () => {
-    const { conversationId } = useParams();
-    const dispatch = useDispatch();
+  const { conversationId } = useParams();
 
-    useEffect(() => {
-      const loadConversation = async () => {
-        try {
-          const conversations = await getConversations();
+  const dispatch = useDispatch();
 
-          dispatch(setConversations(conversations));
+  const conversations = useSelector((state: any) => state.chat.conversations);
 
-          if (conversationId) {
-            const selected = conversations.find(
-              (c: any) => c.id === conversationId,
-            );
+  // Load conversations only once
+  useEffect(() => {
+    const loadConversations = async () => {
+      try {
+        const data = await getConversations();
 
-            if (selected) {
-              dispatch(setSelectedConversation(selected));
-            }
-          }
-        } catch (error) {
-          console.log(error);
-        }
-      };
+        dispatch(setConversations(data));
+      } catch (error) {
+        console.log(error);
+      }
+    };
 
-      loadConversation();
-    }, [conversationId]);
+    loadConversations();
+  }, [dispatch]);
 
-    useEffect(() => {
-      socket.connect();
+  // Update selected conversation when URL changes
+  useEffect(() => {
+    if (!conversationId) return;
 
-      return () => {
-        socket.disconnect();
-      };
-    }, []);
+    const selected = conversations.find((c: any) => c.id === conversationId);
+
+    if (selected) {
+      dispatch(setSelectedConversation(selected));
+    }
+  }, [conversationId, conversations, dispatch]);
+
+  useEffect(() => {
+    socket.connect();
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
   return (
     <>
-    <Navbar/>
+      <Navbar />
+
       <Flex h="100vh">
         <Box w="350px" borderRight="1px solid" borderColor="gray.200">
           <ConversationList />

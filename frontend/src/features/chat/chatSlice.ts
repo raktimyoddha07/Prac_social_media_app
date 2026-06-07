@@ -69,6 +69,21 @@ const chatSlice = createSlice({
         (m: any) => m.id !== action.payload,
       );
     },
+    moveConversationToTop: (state, action) => {
+      const conversationId = action.payload;
+
+      const index = state.conversations.findIndex(
+        (c: any) => c.id === conversationId,
+      );
+
+      if (index === -1) return;
+
+      const conversation = state.conversations[index];
+
+      state.conversations.splice(index, 1);
+
+      state.conversations.unshift(conversation);
+    },
   },
 });
 
@@ -80,6 +95,7 @@ export const {
   addConversation,
   editMessage,
   deleteMessage,
+  moveConversationToTop,
 } = chatSlice.actions;
 
 export default chatSlice.reducer;

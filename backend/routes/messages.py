@@ -118,20 +118,42 @@ def get_conversations(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
+    conversations = (
+        db.query(Conversation)
+        .filter(
+            (Conversation.user1_id == current_user.id)
+            |
+            (Conversation.user2_id == current_user.id)
+        )
+        .all()
+    )
 
-    conversations = db.query(
-        Conversation
-    ).filter(
-        (Conversation.user1_id == current_user.id)
-        |
-        (Conversation.user2_id == current_user.id)
-    ).all()
+    conversations.sort(
+        key=lambda c: (
+            db.query(Message)
+            .filter(
+                Message.conversation_id == c.id
+            )
+            .order_by(
+                Message.createdAt.desc()
+            )
+            .first()
+            .createdAt
+            if db.query(Message)
+                .filter(
+                    Message.conversation_id == c.id
+                )
+                .first()
+            else c.createdAt
+        ),
+        reverse=True,
+    )
 
     return [
         build_conversation_response(
             conversation,
             current_user,
-            db
+            db,
         )
         for conversation in conversations
     ]
@@ -242,35 +264,6 @@ def get_messages(
 
 
 
-@router.get(
-        "/{conversation_id}",
-        response_model=list[MessageResponse]
-)
-def get_messages(
-    conversation_id: str,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
-):
-
-    print("PARAM:", conversation_id)
-
-    conversation = db.query(
-        Conversation
-    ).filter(
-        Conversation.id == conversation_id
-    ).first()
-
-    print("CONVERSATION:", conversation)
-
-    messages = db.query(
-        Message
-    ).filter(
-        Message.conversation_id == conversation_id
-    ).all()
-
-    print("FOUND:", len(messages))
-
-    return []
 
 #edit message
 @router.put("/{message_id}", response_model=MessageResponse)

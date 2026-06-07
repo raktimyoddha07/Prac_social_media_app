@@ -126,5 +126,4 @@ const MessageBubble = ({ message }: any) => {
     </Box>
   );
 };
-
 export default MessageBubble;

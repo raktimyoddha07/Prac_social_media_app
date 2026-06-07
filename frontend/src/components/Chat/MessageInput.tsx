@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { sendMessage } from "../../features/chat/chatAPI";
 
 import { socket } from "../../socket/socket";
-import { addMessage } from "../../features/chat/chatSlice";
+import { moveConversationToTop } from "../../features/chat/chatSlice";
 
 const MessageInput = () => {
   const dispatch = useDispatch();

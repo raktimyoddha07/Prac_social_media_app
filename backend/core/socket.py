@@ -74,6 +74,7 @@ async def edit_message(sid, data):
             {
                 "id": str(message.id),
                 "content": message.content,
+                "conversation_id": str(message.conversation_id),
             },
             room=str(message.conversation_id),
         )
@@ -109,6 +110,7 @@ async def delete_message(sid, data):
             "message_deleted",
             {
                 "message_id": message_id,
+                "conversation_id": str(message.conversation_id),
             },
             room=conversation_id,
         )
