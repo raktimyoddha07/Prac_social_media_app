@@ -42,6 +42,7 @@ const PostCard = ({ post, onLikeToggle, ondislikeToggle }: PostCardProps) => {
   const [editedImageUrl, setEditedImageUrl] = useState(post.image_url || "");
   const [previewImage, setPreviewImage] = useState(post.image_url || "");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [showMenu, setShowMenu] = useState(false);
 
   const fetchComments = async () => {
     try {
@@ -140,120 +141,193 @@ const PostCard = ({ post, onLikeToggle, ondislikeToggle }: PostCardProps) => {
     }
   };
 
-  return (
-    <Box borderWidth="1px" p={4} borderRadius="lg" mb={4}>
-      <Text fontWeight="bold" mb={2}>
-        <Link to={`/profile/${post.user_id}`}>{post.user?.username}</Link>
-      </Text>
+ return (
+   <Box
+     bg="gray.900"
+     border="1px solid"
+     borderColor="gray.700"
+     borderRadius="xl"
+     overflow="hidden"
+     mb={6}
+     boxShadow="lg"
+   >
+     {/* Header */}
+     <Box
+       px={5}
+       py={4}
+       display="flex"
+       justifyContent="space-between"
+       alignItems="center"
+       borderBottom="1px solid"
+       borderColor="gray.700"
+     >
+       <Text fontWeight="bold" fontSize="lg">
+         <Link to={`/profile/${post.user_id}`}>{post.user?.username}</Link>
+       </Text>
 
-      {post.user_id === currentUser?.id && (
-        <Box mb={3}>
-          {isEditing ? (
-            <>
-              <Button
-                size="sm"
-                colorScheme="green"
-                mr={2}
-                onClick={handleUpdate}
-              >
-                Save
-              </Button>
+       {post.user_id === currentUser?.id && !isEditing && (
+         <Box position="relative">
+           <Button
+             size="sm"
+             variant="ghost"
+             onClick={() => setShowMenu(!showMenu)}
+           >
+             ⋮
+           </Button>
 
-              <Button size="sm" onClick={() => setIsEditing(false)}>
-                Cancel
-              </Button>
-            </>
-          ) : (
-            <>
-              <Button size="sm" mr={2} onClick={() => setIsEditing(true)}>
-                ✏️
-              </Button>
+           {showMenu && (
+             <Box
+               position="absolute"
+               right="0"
+               top="40px"
+               bg="gray.800"
+               border="1px solid"
+               borderColor="gray.700"
+               borderRadius="md"
+               overflow="hidden"
+               zIndex={100}
+               minW="120px"
+             >
+               <Button
+                 w="100%"
+                 justifyContent="flex-start"
+                 variant="ghost"
+                 borderRadius="0"
+                 onClick={() => {
+                   setIsEditing(true);
+                   setShowMenu(false);
+                 }}
+               >
+                 ✏️ Edit
+               </Button>
 
-              <Button size="sm" colorScheme="red" onClick={handleDelete}>
-                🗑️
-              </Button>
-            </>
-          )}
-        </Box>
-      )}
+               <Button
+                 w="100%"
+                 justifyContent="flex-start"
+                 variant="ghost"
+                 colorScheme="red"
+                 borderRadius="0"
+                 onClick={() => {
+                   handleDelete();
+                   setShowMenu(false);
+                 }}
+               >
+                 🗑️ Delete
+               </Button>
+             </Box>
+           )}
+         </Box>
+       )}
+     </Box>
 
-      {post.image_url && (
-        <Image
-          src={post.image_url}
-          alt="post"
-          borderRadius="md"
-          mb={3}
-          maxH="300px"
-          objectFit="cover"
-          width="100%"
-        />
-      )}
+     {/* Normal Post Image */}
+     {!isEditing && post.image_url && (
+       <Image
+         src={post.image_url}
+         alt="post"
+         width="100%"
+         maxH="800px"
+         objectFit="contain"
+       />
+     )}
 
-      {isEditing ? (
-        <>
-          <Textarea
-            value={editedContent}
-            onChange={(e) => setEditedContent(e.target.value)}
-            mb={3}
-          />
+     {/* Content */}
+     <Box p={5}>
+       {isEditing ? (
+         <>
+           {previewImage && (
+             <Image
+               src={previewImage}
+               alt="preview"
+               width="100%"
+               maxH="700px"
+               objectFit="contain"
+               borderRadius="lg"
+               mb={4}
+             />
+           )}
 
-          {editedImageUrl && (
-            <Image
-              src={previewImage}
-              alt="current-image"
-              borderRadius="md"
-              mb={3}
-              maxH="200px"
-            />
-          )}
+           <Input
+             type="file"
+             accept="image/*"
+             onChange={handleFileChange}
+             mb={4}
+           />
 
-          <Input
-            type="file"
-            accept="image/*"
-            onChange={handleFileChange}
-            mb={3}
-          />
-        </>
-      ) : (
-        <Text mb={3}>{post.content}</Text>
-      )}
+           <Textarea
+             value={editedContent}
+             onChange={(e) => setEditedContent(e.target.value)}
+             placeholder="Write a caption..."
+             mb={4}
+           />
 
-      <Box mt={3}>
-        <Button
-          size="sm"
-          mr={2}
-          colorScheme={post.liked_by_user ? "red" : "gray"}
-          onClick={handleLike}
-        >
-          {post.liked_by_user ? "❤️" : "🤍"} {post.likes_count}
-        </Button>
-        <Button
-          size="sm"
-          mr={2}
-          colorScheme={post.disliked_by_user ? "red" : "gray"}
-          onClick={handleDislike}
-        >
-          {post.disliked_by_user ? "👎" : "👎🏻"} {post.dislikes_count}
-        </Button>
+           <Box display="flex" justifyContent="flex-end" gap={2}>
+             <Button colorScheme="green" onClick={handleUpdate}>
+               Save
+             </Button>
 
-        <Button
-          size="sm"
-          variant="ghost"
-          onClick={() => setShowComments(!showComments)}
-        >
-          💬 {comments.length}
-        </Button>
-      </Box>
+             <Button
+               onClick={() => {
+                 setIsEditing(false);
+                 setShowMenu(false);
+               }}
+             >
+               Cancel
+             </Button>
+           </Box>
+         </>
+       ) : (
+         <Text fontSize="md" whiteSpace="pre-wrap" lineHeight="1.7">
+           {post.content}
+         </Text>
+       )}
+     </Box>
 
-      {showComments && (
-        <Box mt={4}>
-          <CommentForm onSubmit={handleComment} />
+     {/* Footer */}
+     <Box
+       px={5}
+       py={4}
+       borderTop="1px solid"
+       borderColor="gray.700"
+       display="flex"
+       gap={3}
+       flexWrap="wrap"
+     >
+       <Button
+         size="sm"
+         colorScheme={post.liked_by_user ? "red" : "gray"}
+         onClick={handleLike}
+       >
+         {post.liked_by_user ? "❤️" : "🤍"} {post.likes_count}
+       </Button>
 
-          <CommentList comments={comments} refreshComments={fetchComments} />
-        </Box>
-      )}
-    </Box>
-  );
+       <Button
+         size="sm"
+         colorScheme={post.disliked_by_user ? "red" : "gray"}
+         onClick={handleDislike}
+       >
+         {post.disliked_by_user ? "👎" : "👎🏻"} {post.dislikes_count}
+       </Button>
+
+       <Button
+         size="sm"
+         variant="ghost"
+         onClick={() => setShowComments(!showComments)}
+       >
+         💬 {comments.length}
+       </Button>
+     </Box>
+
+     {/* Comments */}
+     {showComments && (
+       <Box p={5} borderTop="1px solid" borderColor="gray.700" bg="gray.950">
+         <CommentForm onSubmit={handleComment} />
+
+         <CommentList comments={comments} refreshComments={fetchComments} />
+       </Box>
+     )}
+   </Box>
+ );
 };
 
 export default PostCard;

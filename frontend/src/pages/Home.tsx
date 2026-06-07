@@ -38,7 +38,12 @@ const Home = () => {
 
   useEffect(() => {
     fetchPosts();
-    fetchCurrentUser();
+
+    const interval = setInterval(() => {
+      fetchPosts();
+    }, 10000);
+
+    return () => clearInterval(interval);
   }, []);
 
   return (
