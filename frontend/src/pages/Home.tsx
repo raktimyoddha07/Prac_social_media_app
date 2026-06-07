@@ -45,7 +45,7 @@ const Home = () => {
     <>
       <Navbar />
 
-      <Box maxW="600px" mx="auto">
+      <Box maxW="600px" mx="auto" minH="100vh">
         <CreatePost refreshPosts={fetchPosts} />
 
         {posts.map((post) => (

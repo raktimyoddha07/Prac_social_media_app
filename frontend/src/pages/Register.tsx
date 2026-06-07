@@ -37,39 +37,47 @@ const Register = () => {
   };
 
   return (
-    <Box maxW="400px" mx="auto" mt={10}>
-      <VStack>
-        <Heading>Register</Heading>
+    <Box
+      minH="100vh"
+      bg="bg"
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+    >
+      <Box maxW="400px" mx="auto" mt={10}>
+        <VStack>
+          <Heading>Register</Heading>
 
-        <Input
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
+          <Input
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
 
-        <Input
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+          <Input
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
 
-        <Input
-          placeholder="Password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+          <Input
+            placeholder="Password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
 
-        <Button colorScheme="green" width="100%" onClick={handleRegister}>
-          Register
-        </Button>
-        <Text>
-          Already have an account?{" "}
-          <Link to="/login" style={{ color: "blue" }}>
-            Login
-          </Link>
-        </Text>
-      </VStack>
+          <Button colorScheme="green" width="100%" onClick={handleRegister}>
+            Register
+          </Button>
+          <Text>
+            Already have an account?{" "}
+            <Link to="/login" style={{ color: "blue" }}>
+              Login
+            </Link>
+          </Text>
+        </VStack>
+      </Box>
     </Box>
   );
 };

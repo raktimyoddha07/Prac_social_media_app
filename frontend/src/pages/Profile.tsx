@@ -134,7 +134,7 @@ const Profile = () => {
     <>
       <Navbar />
 
-      <Box maxW="800px" mx="auto" mt={8}>
+      <Box maxW="800px" mx="auto" mt={8} minH="100vh">
         <Box borderWidth="1px" p={6} borderRadius="lg" mb={6}>
           {isEditing ? (
             <VStack align="stretch">

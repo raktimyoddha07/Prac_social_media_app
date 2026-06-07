@@ -38,33 +38,41 @@ const Login = () => {
   };
 
   return (
-    <Box maxW="400px" mx="auto" mt={10}>
-      <VStack>
-        <Heading>Login</Heading>
+    <Box
+      minH="100vh"
+      bg="bg"
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+    >
+      <Box maxW="400px" mx="auto" mt={10}>
+        <VStack>
+          <Heading>Login</Heading>
 
-        <Input
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+          <Input
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
 
-        <Input
-          placeholder="Password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+          <Input
+            placeholder="Password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
 
-        <Button colorScheme="blue" width="100%" onClick={handleLogin}>
-          Login
-        </Button>
-        <Text>
-          Don't have an account?{" "}
-          <Link to="/register" style={{ color: "blue" }}>
-            Register
-          </Link>
-        </Text>
-      </VStack>
+          <Button colorScheme="blue" width="100%" onClick={handleLogin}>
+            Login
+          </Button>
+          <Text>
+            Don't have an account?{" "}
+            <Link to="/register" style={{ color: "blue" }}>
+              Register
+            </Link>
+          </Text>
+        </VStack>
+      </Box>
     </Box>
   );
 };
