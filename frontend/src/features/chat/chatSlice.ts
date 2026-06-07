@@ -19,10 +19,15 @@ const chatSlice = createSlice({
 
     setSelectedConversation: (state, action) => {
       state.selectedConversation = action.payload;
-      localStorage.setItem(
-        "selectedConversation",
-        JSON.stringify(action.payload),
-      );
+
+      if (action.payload) {
+        localStorage.setItem(
+          "selectedConversation",
+          JSON.stringify(action.payload),
+        );
+      } else {
+        localStorage.removeItem("selectedConversation");
+      }
     },
 
     setMessages: (state, action) => {

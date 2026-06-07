@@ -41,7 +41,10 @@ const Messages = () => {
 
   // Update selected conversation when URL changes
   useEffect(() => {
-    if (!conversationId) return;
+    if (!conversationId) {
+      dispatch(setSelectedConversation(null));
+      return;
+    }
 
     const selected = conversations.find((c: any) => c.id === conversationId);
 
