@@ -1,9 +1,9 @@
 # Social Media Application
----
+
 A beginner friendly social media application to understand full stack CRUD operations and real-time chatting using web-sockets.
 
 ## Key features
----
+
 1. User can create a profile
 2. User can create post with selected image and caption
 3. User will get all the posts in his feed
@@ -13,15 +13,16 @@ A beginner friendly social media application to understand full stack CRUD opera
 7. User can do real-time conversation with why one he wants
 
 ## Tech stack used:
----
+
 - Frontend: React.js, Typescript, Redux, Chakra UI
 - Backend: FastAPI, SqlAlchemy
 - Database: PostgreSQL
+
 ## Database Relationship Diagram
----
+
 ![image](https://github.com/raktimyoddha07/Prac_social_media_app/raw/master/assets/database_relation.png)
 ## Sample of .env 
----
+
 ### For Frontend 
 
 ```
@@ -39,7 +40,7 @@ FRONTEND_URL=
 ```
 
 ## How to run (for Windows)
----
+
 ### For Frontend
 
 1. Open frontend directory
