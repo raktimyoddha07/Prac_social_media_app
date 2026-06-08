@@ -18,6 +18,7 @@ const CommentList = ({ comments, refreshComments }: Props) => {
   const [editingCommentId, setEditingCommentId] = useState("");
 
   const [editedText, setEditedText] = useState("");
+  const [openMenuId, setOpenMenuId] = useState("");
 
   const handleUpdate = async (commentId: string) => {
     try {
@@ -45,58 +46,112 @@ const CommentList = ({ comments, refreshComments }: Props) => {
   return (
     <Box mt={3}>
       {comments.map((comment) => (
-        <Box key={comment.id} borderWidth="1px" p={2} mb={2} borderRadius="md">
-          <Link to={`/profile/${comment.user_id}`}>
-            <Text fontWeight="bold">{comment.user?.username}</Text>
-          </Link>
+        <Box
+          key={comment.id}
+          bg="gray.800"
+          border="1px solid"
+          borderColor="gray.700"
+          p={3}
+          mb={3}
+          borderRadius="lg"
+        >
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="flex-start"
+            mb={2}
+          >
+            <Link to={`/profile/${comment.user_id}`}>
+              <Text fontWeight="bold" color="white">
+                {comment.user?.username}
+              </Text>
+            </Link>
+
+            {comment.user_id === currentUser?.id &&
+              editingCommentId !== comment.id && (
+                <Box position="relative">
+                  <Button
+                    size="xs"
+                    variant="ghost"
+                    minW="auto"
+                    p={1}
+                    onClick={() =>
+                      setOpenMenuId(openMenuId === comment.id ? "" : comment.id)
+                    }
+                  >
+                    ⋮
+                  </Button>
+
+                  {openMenuId === comment.id && (
+                    <Box
+                      position="absolute"
+                      right="0"
+                      top="28px"
+                      bg="gray.900"
+                      border="1px solid"
+                      borderColor="gray.700"
+                      borderRadius="md"
+                      overflow="hidden"
+                      zIndex={100}
+                      minW="120px"
+                    >
+                      <Button
+                        w="100%"
+                        justifyContent="flex-start"
+                        variant="ghost"
+                        borderRadius="0"
+                        onClick={() => {
+                          setEditingCommentId(comment.id);
+                          setEditedText(comment.comment_text);
+                          setOpenMenuId("");
+                        }}
+                      >
+                        ✏️ Edit
+                      </Button>
+
+                      <Button
+                        w="100%"
+                        justifyContent="flex-start"
+                        variant="ghost"
+                        colorScheme="red"
+                        borderRadius="0"
+                        onClick={() => {
+                          handleDelete(comment.id);
+                          setOpenMenuId("");
+                        }}
+                      >
+                        🗑️ Delete
+                      </Button>
+                    </Box>
+                  )}
+                </Box>
+              )}
+          </Box>
+
           {editingCommentId === comment.id ? (
             <>
               <Textarea
                 value={editedText}
                 onChange={(e) => setEditedText(e.target.value)}
-                mb={2}
+                mb={3}
               />
 
-              <Button
-                size="xs"
-                colorScheme="green"
-                mr={2}
-                onClick={() => handleUpdate(comment.id)}
-              >
-                Save
-              </Button>
+              <Box display="flex" justifyContent="flex-end" gap={2}>
+                <Button
+                  size="sm"
+                  colorScheme="green"
+                  onClick={() => handleUpdate(comment.id)}
+                >
+                  Save
+                </Button>
 
-              <Button size="xs" onClick={() => setEditingCommentId("")}>
-                Cancel
-              </Button>
+                <Button size="sm" onClick={() => setEditingCommentId("")}>
+                  Cancel
+                </Button>
+              </Box>
             </>
           ) : (
-            <>
-              <Text mb={2}>{comment.comment_text}</Text>
-
-              {comment.user_id === currentUser?.id && (
-                <>
-                  <Button
-                    size="xs"
-                    mr={2}
-                    onClick={() => {
-                      setEditingCommentId(comment.id);
-                      setEditedText(comment.comment_text);
-                    }}
-                  >
-                    ✏️
-                  </Button>
-
-                  <Button
-                    size="xs"
-                    colorScheme="red"
-                    onClick={() => handleDelete(comment.id)}
-                  >
-                    🗑️
-                  </Button>
-                </>
-              )}
-            </>
+            <Text color="gray.200">{comment.comment_text}</Text>
           )}
         </Box>
       ))}

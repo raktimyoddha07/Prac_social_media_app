@@ -60,11 +60,15 @@ const PostCard = ({ post, onLikeToggle, ondislikeToggle }: PostCardProps) => {
 
   const handleLike = async () => {
     try {
-      await likePost(post.id);
+      console.log("LIKING:", post.id);
+
+      const res = await likePost(post.id);
+
+      console.log("SERVER RESPONSE:", res);
 
       dispatch(toggleLike(post.id));
     } catch (error) {
-      console.log(error);
+      console.log("LIKE ERROR:", error);
     }
   };
 
